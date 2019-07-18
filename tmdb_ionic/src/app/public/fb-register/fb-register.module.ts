@@ -5,12 +5,12 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { LoginPage } from './login.page';
+import { FbRegisterPage } from './fb-register.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: LoginPage
+    component: FbRegisterPage
   }
 ];
 
@@ -21,6 +21,6 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [LoginPage]
+  declarations: [FbRegisterPage]
 })
-export class LoginPageModule {}
+export class FbRegisterPageModule {}
