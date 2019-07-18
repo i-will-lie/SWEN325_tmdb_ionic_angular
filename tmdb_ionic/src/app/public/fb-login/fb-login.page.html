@@ -1,9 +1,24 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>fb-login</ion-title>
+    <ion-title>loogin</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content padding>
+  <ion-item>
+    <ion-input type="email">Login</ion-input>
+  </ion-item>
 
+  <ion-item>
+    <ion-input type="password">Password</ion-input>
+  </ion-item>
+
+  <ion-button (click)="login()" expand="block">Login</ion-button>
+  <ion-button
+    expand="block"
+    color="secondary"
+    routerLink="/register"
+    routerDirection="forward"
+    >Register</ion-button
+  >
 </ion-content>

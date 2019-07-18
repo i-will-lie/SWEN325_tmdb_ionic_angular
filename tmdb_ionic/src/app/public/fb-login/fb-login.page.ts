@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { AuthenticationService } from "./../../services/authentication.service";
+import { Component, OnInit } from "@angular/core";
 
 @Component({
-  selector: 'app-fb-login',
-  templateUrl: './fb-login.page.html',
-  styleUrls: ['./fb-login.page.scss'],
+  selector: "app-fb-login",
+  templateUrl: "./fb-login.page.html",
+  styleUrls: ["./fb-login.page.scss"]
 })
 export class FbLoginPage implements OnInit {
+  constructor(private authService: AuthenticationService) {}
 
-  constructor() { }
-
-  ngOnInit() {
+  ngOnInit() {}
+  login() {
+    this.authService.fbLogin();
   }
-
 }

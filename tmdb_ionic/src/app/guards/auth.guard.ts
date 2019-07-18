@@ -1,10 +1,19 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
+import { AuthenticationService } from "../services/authentication.service";
+import { Injectable } from "@angular/core";
+import {
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+  UrlTree,
+  CanActivate
+} from "@angular/router";
+import { Observable } from "rxjs";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
-export class AuthGuard implements  {
-  
+export class AuthGuard implements CanActivate {
+  constructor(private authService: AuthenticationService) {}
+  canActivate(): boolean {
+    return this.authService.fbIsAuthenticated();
+  }
 }
