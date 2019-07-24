@@ -13,7 +13,9 @@ import { Observable } from "rxjs";
 })
 export class AuthGuard implements CanActivate {
   constructor(private authService: AuthenticationService) {}
+
   canActivate(): boolean {
+    console.log("checking authGuard");
     return this.authService.fbIsAuthenticated();
   }
 }

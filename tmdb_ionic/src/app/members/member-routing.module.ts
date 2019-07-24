@@ -6,6 +6,11 @@ const routes: Routes = [
   {
     path: "dashboard",
     loadChildren: "./dashboard/dashboard.module#DashboardPageModule"
+  },
+  { path: "search", loadChildren: "./search/search.module#SearchPageModule" },
+  {
+    path: "detail/:id",
+    loadChildren: "./detail/detail.module#DetailPageModule"
   }
 ];
 @NgModule({

@@ -1,9 +1,17 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>tmdb-login</ion-title>
+    <ion-title>tmdb login</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content padding>
+  <ion-item>
+    <ion-input type="email" [(ngModel)]="username">Login: </ion-input>
+  </ion-item>
 
+  <ion-item>
+    <ion-input type="password" [(ngModel)]="password">Password: </ion-input>
+  </ion-item>
+
+  <ion-button (click)="tmdbLogin()" expand="block">Login</ion-button>
 </ion-content>

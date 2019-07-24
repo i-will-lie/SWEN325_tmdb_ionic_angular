@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>My Movie Search</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-searchbar
+    [(ngModel)]="searchTerm"
+    (ionChange)="searchChanged($event)"
+  ></ion-searchbar>
+
+  <ion-item>
+    <ion-label>Select Ssearchtype</ion-label>
+    <ion-select
+      [(ngModel)]="type"
+      debounce="500"
+      (ionChange)="searchChanged($event)"
+    >
+      <ion-select-option value="movie">Movie</ion-select-option>
+      <ion-select-option value="series">Series</ion-select-option>
+      <ion-select-option value="episode">Episode</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-list
+    >Results
+    <ion-item
+      button
+      *ngFor="let item of results | async"
+      [routerLink]="['/', 'members', 'detail', item.id]"
+    >
+      <ion-list>
+        <ion-label>{{ item.title }}</ion-label>
+        <ion-label>{{ item.release_date }}</ion-label>
+        <ion-label>{{ item.vote_average }}</ion-label>
+      </ion-list>
+      <ion-thumbnail
+        >{{ getImage(item.poster_path) }}
+        <!-- <ion-img src="getImage(item.poster_path)">
+          {{ getImage(item.poster_path) }}
+          </ion-img
+        > -->
+      </ion-thumbnail>
+    </ion-item>
+    <!-- http://localhost:8100/getImage(item.poster_path) -->
+    <!--<ion-item
+      button
+      *ngFor="let item of results | async"
+      [routerLink]="['/movies/', item.id]"
+      click="gotoItem(, item)"
+    >
+      {{ item.title }}
+    </ion-item>-->
+  </ion-list>
+</ion-content>

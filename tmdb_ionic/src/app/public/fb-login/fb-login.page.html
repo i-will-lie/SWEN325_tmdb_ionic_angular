@@ -3,22 +3,22 @@
     <ion-title>loogin</ion-title>
   </ion-toolbar>
 </ion-header>
-
+f
 <ion-content padding>
   <ion-item>
-    <ion-input type="email">Login</ion-input>
+    <ion-input type="email" [(ngModel)]="email">Login: </ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-input type="password">Password</ion-input>
+    <ion-input type="password" [(ngModel)]="password">Password: </ion-input>
   </ion-item>
 
-  <ion-button (click)="login()" expand="block">Login</ion-button>
+  <ion-button (click)="fbLogin()" expand="block">Login</ion-button>
   <ion-button
     expand="block"
     color="secondary"
-    routerLink="/register"
+    routerLink="/fb-register"
     routerDirection="forward"
     >Register</ion-button
-  >
+  >vv
 </ion-content>

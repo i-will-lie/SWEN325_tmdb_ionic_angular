@@ -1,15 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { AuthenticationService } from "./../../services/authentication.service";
+import { Component, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.page.html',
-  styleUrls: ['./dashboard.page.scss'],
+  selector: "app-dashboard",
+  templateUrl: "./dashboard.page.html",
+  styleUrls: ["./dashboard.page.scss"]
 })
 export class DashboardPage implements OnInit {
+  constructor(
+    private authService: AuthenticationService,
+    private router: Router
+  ) {}
 
-  constructor() { }
+  ngOnInit() {}
 
-  ngOnInit() {
+  logout() {
+    this.authService.fbLogut();
+    this.router.navigate([""]);
   }
-
 }

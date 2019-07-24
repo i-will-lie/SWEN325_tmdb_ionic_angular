@@ -1,9 +1,20 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>fb-register</ion-title>
+    <ion-title>tmdblogin</ion-title>
+    <ion-buttons><ion-back-button></ion-back-button></ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content padding>
+  <ion-item>
+    <ion-input type="email" [(ngModel)]="email">Email</ion-input>
+  </ion-item>
 
+  <ion-item>
+    <ion-input type="password" [(ngModel)]="password">Password</ion-input>
+  </ion-item>
+
+  <ion-button expand="block" color="secondary" (click)="register()"
+    >Register</ion-button
+  >
 </ion-content>
