@@ -5,5 +5,14 @@
 </ion-header>
 
 <ion-content>
-
+  <ion-card>
+    <ion-card-title>{{ itemDetails?.title }}</ion-card-title>
+    <ion-card-subtitle>{{ itemDetails?.release_date }}</ion-card-subtitle>
+    <ion-card-content>
+      <ion-img
+        [src]="'https://image.tmdb.org/t/p/original' + itemDetails?.poster_path"
+      >
+      </ion-img>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

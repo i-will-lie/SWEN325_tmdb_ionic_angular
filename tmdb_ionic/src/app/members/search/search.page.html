@@ -36,12 +36,11 @@
         <ion-label>{{ item.vote_average }}</ion-label>
       </ion-list>
       <ion-thumbnail
-        >{{ getImage(item.poster_path) }}
-        <!-- <ion-img src="getImage(item.poster_path)">
-          {{ getImage(item.poster_path) }}
-          </ion-img
-        > -->
-      </ion-thumbnail>
+        ><ion-img
+          [src]="'https://image.tmdb.org/t/p/original' + item?.poster_path"
+        >
+        </ion-img
+      ></ion-thumbnail>
     </ion-item>
     <!-- http://localhost:8100/getImage(item.poster_path) -->
     <!--<ion-item

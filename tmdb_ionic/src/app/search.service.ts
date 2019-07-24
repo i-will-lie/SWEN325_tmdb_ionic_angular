@@ -50,8 +50,17 @@ export class SearchService {
     );
   }
 
-  getImage(path) {
-    console.log(`https://image.tmdb.org/t/p/original${path}`);
-    return `https://image.tmdb.org/t/p/original${path}`;
-  }
+  // getImage(itemDetails) {
+  //   var p = "/f2R11Ys1asseqyp5fnIMFC6ytE4.jpg";
+  //   //return this.searchService.getImage(path);
+  //   console.log("posterpath", itemDetails["poster_path"]);
+  //   return (
+  //     "https://image.tmdb.org/t/p/original" + p //this.itemDetails["poster_path"]
+  //   );
+  // }
+
+  // getImage(path) {
+  //   //console.log(`https://image.tmdb.org/t/p/original${path}`);
+  //   return `https://image.tmdb.org/t/p/original${path}`;
+  // }
 }
