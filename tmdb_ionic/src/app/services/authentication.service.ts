@@ -22,9 +22,12 @@ export class AuthenticationService {
   user: FBUSer;
   fbUserID = "1";
   fbUserToken: string;
-  authenticationState = new BehaviorSubject(false);
-  authenticated: boolean = false;
+  //authenticationState = new BehaviorSubject(false);
+  //authenticated: boolean = false;
   tmdbToken: string;
+  number = 5;
+
+  tmdbAuthenticated = false;
   constructor(
     private storage: Storage,
     private plt: Platform,
@@ -32,10 +35,10 @@ export class AuthenticationService {
     private toast: ToastController,
     private http: HttpClient
   ) {
-    this.plt.ready().then(() => {
-      console.log("platform ready");
-      this.checkToken();
-    });
+    // this.plt.ready().then(() => {
+    //   console.log("platform ready");
+    //   this.checkToken();
+    // });
   }
 
   async fbLogin(email: string, password: string) {
@@ -53,7 +56,7 @@ export class AuthenticationService {
       //this.authenticationState.next(true);
       return this.storage.set(this.fbUserID, this.fbUserToken).then(res => {
         //this.authenticationState = true;
-        console.log("atueh state after login is ", this.authenticationState);
+
         return true;
       });
     } catch (e) {
@@ -111,107 +114,112 @@ export class AuthenticationService {
       })
       .toPromise();
   }
-  async tmdbLogin(username: string, password: string) {
-    return this.http
-      .get(`${tmdbURL}authentication/token/new?api_key=${tmdbAPI}`)
-      .toPromise();
+  // async tmdbLogin(username: string, password: string) {
+  //   return this.http
+  //     .get(`${tmdbURL}authentication/token/new?api_key=${tmdbAPI}`)
+  //     .toPromise();
 
-    var id: string;
-    var loginSuccess = false;
-    try {
-      this.http
-        .get(`${tmdbURL}authentication/token/new?api_key=${tmdbAPI}`)
-        .toPromise()
-        .then(tokenRes => {
-          if (!tokenRes["request_token"]) {
-            console.log("breaking");
-            return; //return tokenRes;
-          } else {
-            console.log("success");
-          }
+  //   var id: string;
+  //   var loginSuccess = false;
+  //   try {
+  //     this.http
+  //       .get(`${tmdbURL}authentication/token/new?api_key=${tmdbAPI}`)
+  //       .toPromise()
+  //       .then(tokenRes => {
+  //         if (!tokenRes["request_token"]) {
+  //           console.log("breaking");
+  //           return; //return tokenRes;
+  //         } else {
+  //           console.log("success");
+  //         }
 
-          let loginData = {
-            username: "joewill", //username,
-            password: "abc123456", //password,
-            request_token: tokenRes["request_token"]
-          };
-          console.log("got token", tokenRes["request_token"]);
-          this.http
-            .post(
-              `${tmdbURL}authentication/token/validate_with_login?api_key=${tmdbAPI}`,
-              loginData
-            )
-            .toPromise()
-            .then(loginRes => {
-              if (loginRes["success"]) {
-                console.log("success login", loginRes);
-              } else {
-                console.log("failed login", loginRes);
-                return; //loginRes;
-              }
-              // console.log(
-              //   `${tmdbURL}authentication/token/validate_with_login?api_key=${tmdbAPI}`,
-              //   data
-              // );
-              console.log("login response", loginRes["request_token"]);
+  //         let loginData = {
+  //           username: "joewill", //username,
+  //           password: "abc123456", //password,
+  //           request_token: tokenRes["request_token"]
+  //         };
+  //         console.log("got token", tokenRes["request_token"]);
+  //         this.http
+  //           .post(
+  //             `${tmdbURL}authentication/token/validate_with_login?api_key=${tmdbAPI}`,
+  //             loginData
+  //           )
+  //           .toPromise()
+  //           .then(loginRes => {
+  //             if (loginRes["success"]) {
+  //               console.log("success login", loginRes);
+  //             } else {
+  //               console.log("failed login", loginRes);
+  //               return; //loginRes;
+  //             }
+  //             // console.log(
+  //             //   `${tmdbURL}authentication/token/validate_with_login?api_key=${tmdbAPI}`,
+  //             //   data
+  //             // );
+  //             console.log("login response", loginRes["request_token"]);
 
-              this.http
-                .post(
-                  `${tmdbURL}authentication/session/new?api_key=${tmdbAPI}`,
-                  {
-                    request_token: loginRes["request_token"]
-                  }
-                )
-                .toPromise()
-                .then(sessionRes => {
-                  console.log("sess id", sessionRes, sessionRes["session_id"]);
-                  id = sessionRes["session_id"];
-                  this.authenticated = true;
-                  this.authenticationState.next(true);
-                  loginSuccess = true;
+  //             this.http
+  //               .post(
+  //                 `${tmdbURL}authentication/session/new?api_key=${tmdbAPI}`,
+  //                 {
+  //                   request_token: loginRes["request_token"]
+  //                 }
+  //               )
+  //               .toPromise()
+  //               .then(sessionRes => {
+  //                 console.log("sess id", sessionRes, sessionRes["session_id"]);
+  //                 id = sessionRes["session_id"];
+  //                 this.authenticated = true;
+  //                 this.authenticationState.next(true);
+  //                 loginSuccess = true;
 
-                  return sessionRes;
-                });
-            });
-        });
-      console.log("login success?", loginSuccess);
-      return loginSuccess;
-      this.authenticationState.next(true);
-    } catch (e) {
-      console.log("ERRORRRR", e.message);
-      return false;
-    }
+  //                 return sessionRes;
+  //               });
+  //           });
+  //       });
+  //     console.log("login success?", loginSuccess);
+  //     return loginSuccess;
+  //     this.authenticationState.next(true);
+  //   } catch (e) {
+  //     console.log("ERRORRRR", e.message);
+  //     return false;
+  //   }
+  // }
+
+  tmdbIsAuthenticated() {
+    console.log("tmdbaut", this.tmdbAuthenticated);
+    return this.tmdbAuthenticated;
   }
-
-  requestTmdbToken() {
-    const getURL = "authentication/token/new?api_key=";
-    return this.http.get(`${tmdbURL}${getURL}${tmdbAPI}`).subscribe(res => {
-      console.log("token", res);
-      return res;
-    });
-  }
+  // requestTmdbToken() {
+  //   const getURL = "authentication/token/new?api_key=";
+  //   return this.http.get(`${tmdbURL}${getURL}${tmdbAPI}`).subscribe(res => {
+  //     console.log("token", res);
+  //     return res;
+  //   });
+  // }
 
   async fbLogut() {
     this.afAuth.auth.signOut();
     const res = await this.storage.remove(this.fbUserID);
-    this.authenticationState.next(false);
+    //this.authenticationState.next(false);
+    this.tmdbAuthenticated = false;
     return res;
   }
-  fbIsAuthenticated() {
-    console.log("checking auth state", this.authenticationState);
-    return this.authenticationState.value;
-  }
+  // fbIsAuthenticated() {
+  //   console.log("checking auth state", this.authenticationState);
+  //   return this.authenticationState.value;
+  // }
 
-  checkToken() {
-    console.log("checking token", this.authenticationState);
-    console.log("ck", this.storage.get(this.fbUserID));
+  // checkToken() {
+  //   console.log("checking token", this.authenticationState);
+  //   console.log("ck", this.storage.get(this.fbUserID));
 
-    this.storage.get(this.fbUserID).then(res => {
-      if (res) {
-        console.log("set to true");
-        //this.authenticationState = true;
-        //this.authenticationState.next(false);
-      }
-    });
-  }
+  //   this.storage.get(this.fbUserID).then(res => {
+  //     if (res) {
+  //       console.log("set to true");
+  //       //this.authenticationState = true;
+  //       //this.authenticationState.next(false);
+  //     }
+  //   });
+  // }
 }

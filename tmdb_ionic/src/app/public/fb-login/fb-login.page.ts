@@ -18,9 +18,7 @@ export class FbLoginPage implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit() {
-    console.log("login init", (this.authService.authenticated = false));
-  }
+  ngOnInit() {}
 
   fbLogin() {
     console.log("why you no work!!!");

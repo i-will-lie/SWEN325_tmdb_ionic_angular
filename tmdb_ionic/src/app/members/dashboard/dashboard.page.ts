@@ -15,6 +15,9 @@ export class DashboardPage implements OnInit {
 
   ngOnInit() {}
 
+  search() {
+    this.router.navigate(["members", "search"]);
+  }
   logout() {
     this.authService.fbLogut();
     this.router.navigate([""]);

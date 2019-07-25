@@ -1,6 +1,9 @@
-import { AuthGuard } from "./guards/auth.guard";
+import { TmdbAuthGuard } from "./guards/tmdb-auth.guard";
 import { NgModule } from "@angular/core";
 import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
+import { redirectUnauthorizedTo, canActivate } from "@angular/fire/auth-guard";
+import { AngularFireAuthGuard } from "@angular/fire/auth-guard";
+const redirectUnauthorizedFb = redirectUnauthorizedTo(["fb-login"]);
 
 const routes: Routes = [
   { path: "", redirectTo: "fb-login", pathMatch: "full" },
@@ -15,12 +18,17 @@ const routes: Routes = [
 
   {
     path: "tmdb-login",
+    canActivate: [AngularFireAuthGuard],
     loadChildren: "./public/tmdb-login/tmdb-login.module#TmdbLoginPageModule"
   },
   {
     path: "members",
-    //canActivate: [AuthGuard],
+    canActivate: [AngularFireAuthGuard, TmdbAuthGuard],
     loadChildren: "./members/member-routing.module#MemberRoutingModule"
+  },
+  {
+    path: "**",
+    redirectTo: "fb-login"
   }
 ];
 

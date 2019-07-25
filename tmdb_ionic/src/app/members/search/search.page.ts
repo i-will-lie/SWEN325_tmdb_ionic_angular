@@ -24,6 +24,6 @@ export class SearchPage implements OnInit {
   }
 
   getImage(path: string) {
-    this.searchService.getImage(path);
+    //this.searchService.getImage(path);
   }
 }

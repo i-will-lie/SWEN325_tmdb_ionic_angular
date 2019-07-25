@@ -56,6 +56,8 @@ export class TmdbLoginPage implements OnInit {
     //   this.password
     // );
     console.log("END");
+    this.authService.number = 10;
+    this.authService.tmdbAuthenticated = true;
     this.router.navigate(["members", "dashboard"]);
     //console.log("res2", res);
     //     .then(result => {
