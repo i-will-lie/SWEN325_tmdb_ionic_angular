@@ -8,8 +8,8 @@ import { Router } from "@angular/router";
   styleUrls: ["./tmdb-login.page.scss"]
 })
 export class TmdbLoginPage implements OnInit {
-  username: string;
-  password: string;
+  tmdbUsername: string;
+  tmdbPassword: string;
   constructor(
     private authService: AuthenticationService,
     private router: Router
@@ -18,6 +18,8 @@ export class TmdbLoginPage implements OnInit {
   ngOnInit() {}
 
   async tmdbLogin() {
+    console.log("aaa", this.tmdbUsername, this.tmdbPassword);
+    var tmdbSessionId;
     console.log("ress");
 
     const tokenReqRes = await this.authService.tmdbRequestToken();
@@ -29,9 +31,10 @@ export class TmdbLoginPage implements OnInit {
       console.log("ERROR Token");
       return;
     }
+    console.log("www", this.tmdbUsername, this.tmdbPassword);
     const loginRes = await this.authService.tmdbAuthenticateLoginWithToken(
-      this.username,
-      this.password,
+      this.tmdbUsername,
+      this.tmdbPassword,
       token
     );
     console.log("login done");
@@ -46,6 +49,7 @@ export class TmdbLoginPage implements OnInit {
     const sessionRes = await this.authService.tmdbRequestSession(token);
     if (sessionRes["success"]) {
       console.log("loginRes", sessionRes["session_id"]);
+      tmdbSessionId = sessionRes["session_id"];
     } else {
       console.log("ERROR session");
       return;
@@ -58,20 +62,23 @@ export class TmdbLoginPage implements OnInit {
     console.log("END");
     this.authService.number = 10;
     this.authService.tmdbAuthenticated = true;
-    this.router.navigate(["members", "dashboard"]);
-    //console.log("res2", res);
-    //     .then(result => {
-    //       //if true change pages
-    //       console.log(result);
-    //       //console.log("waiting login");
-    //       if (result) {
-    //         console.log("success tmdblogin");
-    //         this.router.navigate(["members", "dashboard"]);
-    //       } else {
-    //         console.log("fail tmdblogin");
-    //       }
 
-    //       console.log("LOGIN done");
-    //     });
+    const tmdbAccID = await this.authService.tmdbGetAccountID(tmdbSessionId);
+    console.log("id", tmdbAccID["id"]);
+    console.log(
+      "adding tmdbuser",
+      tmdbAccID["id"],
+      this.tmdbUsername,
+      this.tmdbPassword
+    );
+
+    this.authService.tmdbAddUser(
+      this.tmdbUsername,
+      this.tmdbPassword,
+      tmdbAccID["id"]
+    );
+    console.log("adding tmdbsession");
+    this.authService.tmdbAddSession();
+    this.router.navigate(["members", "dashboard"]);
   }
 }

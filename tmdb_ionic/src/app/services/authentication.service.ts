@@ -1,3 +1,7 @@
+import { UserDatabaseService } from "./user-database.service";
+import { User } from "../models/user";
+import { SessionService } from "./session.service";
+import { TmdbUser } from "./../models/tmdbUser";
 import { environment } from "./../../environments/environment.prod";
 import { Platform, ToastController } from "@ionic/angular";
 import { Injectable } from "@angular/core";
@@ -5,9 +9,10 @@ import { Storage } from "@ionic/storage";
 import { BehaviorSubject } from "rxjs";
 import { AngularFireAuth } from "@angular/fire/auth";
 import "../models/fbUser";
-import { FBUSer } from "../models/fbUser";
+import { FbUser } from "../models/fbUser";
 import { HttpClient } from "@angular/common/http";
 import { resolve } from "q";
+import { AngularFireDatabase } from "angularfire2/database";
 
 var fbLog = "auth-token";
 var tmdbSessionID = null;
@@ -19,12 +24,14 @@ const tmdbAPI = "79ad210fe32318cf14cfeb7de2cb26fa";
   providedIn: "root"
 })
 export class AuthenticationService {
-  user: FBUSer;
-  fbUserID = "1";
+  fbUser: FbUser;
+  tmdbUser: TmdbUser;
+  fbUserID: string;
   fbUserToken: string;
   //authenticationState = new BehaviorSubject(false);
   //authenticated: boolean = false;
   tmdbToken: string;
+  tmdbSessionID: string;
   number = 5;
 
   tmdbAuthenticated = false;
@@ -33,7 +40,10 @@ export class AuthenticationService {
     private plt: Platform,
     private afAuth: AngularFireAuth,
     private toast: ToastController,
-    private http: HttpClient
+    private http: HttpClient,
+    private sessionService: SessionService,
+    private afDatabase: AngularFireDatabase,
+    private userDbService: UserDatabaseService
   ) {
     // this.plt.ready().then(() => {
     //   console.log("platform ready");
@@ -48,17 +58,19 @@ export class AuthenticationService {
         email,
         password
       );
+      this.fbUser = { email: email, password: password };
+      return true;
       // console.log(result);
       // console.log(result["user"]["W"]["O"]);
       // console.log(result["user"]["l"]);
-      this.fbUserID = result["user"]["W"]["O"];
-      this.fbUserToken = result["user"]["l"];
+      // this.fbUserID = result["user"]["W"]["O"];
+      //this.fbUserToken = result["user"]["l"];
       //this.authenticationState.next(true);
-      return this.storage.set(this.fbUserID, this.fbUserToken).then(res => {
-        //this.authenticationState = true;
-
-        return true;
-      });
+      // return this.storage.set(this.fbUserID, this.fbUserToken).then(res => {
+      //   //this.authenticationState = true;
+      //   this.fbuser = { email: email, password: password };
+      //   return true;
+      // });
     } catch (e) {
       this.toast
         .create({ message: `${e.message}`, duration: 3000 })
@@ -70,6 +82,9 @@ export class AuthenticationService {
     try {
       await this.afAuth.auth.createUserWithEmailAndPassword(email, password);
       console.log("reg ", email, password);
+
+      this.fbAddUser({ email: email, password: password });
+
       return true;
     } catch (e) {
       this.toast
@@ -78,6 +93,38 @@ export class AuthenticationService {
       return false;
     }
   }
+
+  fbAddUser(fbUser: FbUser) {
+    const newUser = {
+      fbUser: fbUser,
+      tmdbUser: null,
+      sessionID: -1
+    } as User;
+
+    //add user to data base
+    this.userDbService.createNewUser(newUser).then(res => {});
+    console.log("start");
+  }
+
+  tmdbAddUser(
+    tmdbUsername: string,
+    tmdbPassword: string,
+    tmdbAccountID: string
+  ) {
+    const newTmdbUser = {
+      username: tmdbUsername,
+      password: tmdbPassword,
+      accountID: tmdbAccountID
+    };
+    console.log("adding user", this.fbUser.email, newTmdbUser);
+    this.userDbService.addTmdbUser(this.fbUser.email, newTmdbUser);
+  }
+
+  tmdbAddSession() {
+    console.log("+s", this.fbUser.email, this.tmdbSessionID);
+    this.userDbService.addTmdbSession(this.fbUser.email, this.tmdbSessionID);
+  }
+
   async tmdbRequestToken() {
     try {
       return await this.http
@@ -92,9 +139,12 @@ export class AuthenticationService {
     password: string,
     token: string
   ) {
+    console.log(username, password);
     const loginData = {
       username: "joewill", //username,
       password: "abc123456", //password,
+      //username: username,
+      //password: password,
       request_token: token
     };
 
@@ -108,12 +158,25 @@ export class AuthenticationService {
     console.log("login res", res);
   }
   async tmdbRequestSession(token: string) {
-    return await this.http
+    const session = await this.http
       .post(`${tmdbURL}authentication/session/new?api_key=${tmdbAPI}`, {
         request_token: token
       })
       .toPromise();
+    if (session["success"]) {
+      this.tmdbSessionID = session["session_id"];
+      console.log("sid", this.tmdbSessionID);
+    }
+    return session;
   }
+
+  async tmdbGetAccountID(sessionID: string) {
+    const tmdbAccID = await this.http
+      .get(`${tmdbURL}account?api_key=${tmdbAPI}&session_id=${sessionID}`)
+      .toPromise();
+    return tmdbAccID;
+  }
+
   // async tmdbLogin(username: string, password: string) {
   //   return this.http
   //     .get(`${tmdbURL}authentication/token/new?api_key=${tmdbAPI}`)
@@ -186,8 +249,9 @@ export class AuthenticationService {
   //   }
   // }
 
-  tmdbIsAuthenticated() {
+  async tmdbIsAuthenticated() {
     console.log("tmdbaut", this.tmdbAuthenticated);
+    //return await
     return this.tmdbAuthenticated;
   }
   // requestTmdbToken() {
@@ -202,6 +266,8 @@ export class AuthenticationService {
     this.afAuth.auth.signOut();
     const res = await this.storage.remove(this.fbUserID);
     //this.authenticationState.next(false);
+    console.log("fblogout");
+    await this.userDbService.logout(this.fbUser.email);
     this.tmdbAuthenticated = false;
     return res;
   }

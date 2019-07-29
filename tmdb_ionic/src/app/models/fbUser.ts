@@ -1,4 +1,4 @@
-export interface FBUSer {
+export interface FbUser {
   email: string;
   password: string;
 }

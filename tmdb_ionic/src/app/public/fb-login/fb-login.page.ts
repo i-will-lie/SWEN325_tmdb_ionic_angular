@@ -1,5 +1,5 @@
 import { Router } from "@angular/router";
-import { FBUSer } from "./../../models/fbUser";
+import { FbUser } from "./../../models/fbUser";
 import { AuthenticationService } from "./../../services/authentication.service";
 import { Component, OnInit } from "@angular/core";
 
@@ -9,7 +9,7 @@ import { Component, OnInit } from "@angular/core";
   styleUrls: ["./fb-login.page.scss"]
 })
 export class FbLoginPage implements OnInit {
-  fbUser = {} as FBUSer;
+  fbUser = {} as FbUser;
   email: string;
   password: string;
 
@@ -21,11 +21,10 @@ export class FbLoginPage implements OnInit {
   ngOnInit() {}
 
   fbLogin() {
-    console.log("why you no work!!!");
-    console.log(this.email, this.password);
+    //console.log(this.email, this.password);
 
     //this.authService.fbLogin(this.fbUser.email, this.fbUser.password);
-    this.authService.fbLogin("ss@ss.com", "ss123456").then(res => {
+    this.authService.fbLogin("ss@ss.com", "ss1234").then(res => {
       if (res == true) {
         this.router.navigate(["tmdb-login"]);
         console.log("to tmdblogin");

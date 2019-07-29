@@ -27,6 +27,14 @@ const routes: Routes = [
     loadChildren: "./detail/detail.module#DetailPageModule"
   },
   {
+    path: "favourites",
+    loadChildren: "./favourites/favourites.module#FavouritesPageModule"
+  },
+  {
+    path: "profile",
+    loadChildren: "./profile/profile.module#ProfilePageModule"
+  },
+  {
     //path: "members/**",
     path: "**",
     redirectTo: "dashboard"

@@ -2,9 +2,12 @@ import { environment } from "./../environments/environment";
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouteReuseStrategy } from "@angular/router";
+
 import { AngularFireModule } from "@angular/fire";
 import { AngularFireAuthModule } from "@angular/fire/auth";
 import { AngularFireAuthGuard } from "@angular/fire/auth-guard";
+import { AngularFireDatabaseModule } from "angularfire2/database";
+import { AngularFirestoreModule } from "@angular/fire/firestore";
 
 import { IonicModule, IonicRouteStrategy } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
@@ -25,6 +28,9 @@ import { HttpClientModule } from "@angular/common/http";
     IonicStorageModule.forRoot(),
     AngularFireModule.initializeApp(environment.fbAPI),
     AngularFireAuthModule,
+    AngularFireDatabaseModule,
+    AngularFirestoreModule,
+
     HttpClientModule
   ],
   providers: [

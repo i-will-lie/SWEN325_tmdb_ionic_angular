@@ -6,11 +6,11 @@
 
 <ion-content padding>
   <ion-item>
-    <ion-input type="email" [(ngModel)]="username">Login: </ion-input>
+    <ion-input type="string" [(ngModel)]="tmdbUsername">Login: </ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-input type="password" [(ngModel)]="password">Password: </ion-input>
+    <ion-input type="password" [(ngModel)]="tmdbPassword">Password: </ion-input>
   </ion-item>
 
   <ion-button (click)="tmdbLogin()" expand="block">Login</ion-button>

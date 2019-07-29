@@ -18,12 +18,12 @@ const routes: Routes = [
 
   {
     path: "tmdb-login",
-    canActivate: [AngularFireAuthGuard],
+    //canActivate: [AngularFireAuthGuard],
     loadChildren: "./public/tmdb-login/tmdb-login.module#TmdbLoginPageModule"
   },
   {
     path: "members",
-    canActivate: [AngularFireAuthGuard, TmdbAuthGuard],
+    //canActivate: [AngularFireAuthGuard, TmdbAuthGuard],
     loadChildren: "./members/member-routing.module#MemberRoutingModule"
   },
   {

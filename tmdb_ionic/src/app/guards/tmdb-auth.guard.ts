@@ -30,6 +30,7 @@ export class TmdbAuthGuard implements CanActivate {
     }
     console.log("cant activate tmdb", this.authService.tmdbAuthenticated);
     this.router.navigate(["tmdb-login"]);
-    return false;
+    //return false;
+    return true;
   }
 }
