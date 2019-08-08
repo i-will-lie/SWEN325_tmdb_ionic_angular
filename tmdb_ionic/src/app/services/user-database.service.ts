@@ -6,6 +6,8 @@ import { AngularFirestore } from "@angular/fire/firestore";
   providedIn: "root"
 })
 export class UserDatabaseService {
+  dbUser;
+  dbInfo;
   constructor(private firestore: AngularFirestore) {}
 
   createNewUser(user: User) {
@@ -33,28 +35,49 @@ export class UserDatabaseService {
       .update({ sessionID: sessionID });
   }
 
-  logout(fbUserEmail) {
-    console.log("logginout");
+  dbLogout(fbUserEmail) {
+    console.log("logginout", fbUserEmail);
     this.firestore
       .collection("UserInfo")
       .doc(fbUserEmail)
-      .update({ sessionID: "-1" });
+      .update({ sessionID: -1 });
 
+    // this.firestore
+    //   .collection("UserInfo")
+    //   .doc(fbUserEmail)
+    //   .update({ tmdbUser: -1 });
+  }
+
+  tmdbLoggedOn(fbUserEmail) {
+    console.log("getting");
+    console.log(this.dbUser);
+    //return res;
+  }
+
+  async subscribeToDb(fbUserEmail) {
+    console.log("subscribing");
+    this.dbUser = await this.firestore
+      .collection("UserInfo")
+      .doc(fbUserEmail)
+      .valueChanges();
+    // .subscribe(res => {
+    //   this.dbInfo = res;
+    // });
+    console.log("db ___Uder", this.dbUser);
+  }
+
+  updateUsername(fbUserEmail, newName) {
     this.firestore
       .collection("UserInfo")
       .doc(fbUserEmail)
-      .update({ tmdbUser: null });
+      .update({ username: newName });
+  }
+  getDbInfo() {
+    return this.dbInfo;
   }
 
-  read_Students() {
-    return this.firestore.collection("Students").snapshotChanges();
-  }
-
-  update_Student(recordID, user) {
-    this.firestore.doc("Students/" + recordID).update(user);
-  }
-
-  delete_Student(record_id) {
-    this.firestore.doc("Students/" + record_id).delete();
+  getDbUser() {
+    var user;
+    this.dbUser;
   }
 }

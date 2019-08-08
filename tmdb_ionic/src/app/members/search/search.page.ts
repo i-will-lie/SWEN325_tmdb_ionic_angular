@@ -3,6 +3,12 @@ import { Component, OnInit, inject } from "@angular/core";
 import { Observable } from "rxjs";
 
 import { Router } from "@angular/router";
+
+export enum FavouriteType {
+  movie = "movie",
+  series = "series",
+  episode = "episode"
+}
 @Component({
   selector: "app-movies",
   templateUrl: "./search.page.html",

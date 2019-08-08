@@ -15,15 +15,25 @@ export class DashboardPage implements OnInit {
 
   ngOnInit() {}
 
-  navigate(newPage) {
+  navigate(newPage, profile: string = "") {
     console.log("going to", newPage);
     //this.router.navigate(["favourites"]);
-    this.router.navigate(["members", newPage]);
+    if (profile == "") {
+      this.router.navigate(["members", newPage]);
+    } else {
+      this.router.navigate(["members", newPage, profile]);
+    }
+
     //this.router.navigate(["members", "profile"]);
     //this.router.navigate(["members", "search"]);
   }
+
   logout() {
     this.authService.fbLogut();
     this.router.navigate([""]);
+  }
+
+  getCurrentUserEmail() {
+    return this.authService.getEmail();
   }
 }

@@ -23,7 +23,6 @@ export class TmdbAuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean | Observable<boolean> | Promise<boolean> {
-    console.log("bumber is", this.authService.number);
     if (this.authService.tmdbIsAuthenticated()) {
       console.log("can activate tmdb", this.authService.tmdbAuthenticated);
       return true;

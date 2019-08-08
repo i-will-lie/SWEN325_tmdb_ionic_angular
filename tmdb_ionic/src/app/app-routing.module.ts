@@ -29,7 +29,8 @@ const routes: Routes = [
   {
     path: "**",
     redirectTo: "fb-login"
-  }
+  },
+  { path: 'reset-password', loadChildren: './public/reset-password/reset-password.module#ResetPasswordPageModule' }
 ];
 
 @NgModule({

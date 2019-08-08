@@ -1,9 +1,29 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>profile</ion-title>
+    <ion-back-button></ion-back-button>
+    <ion-title>Profile</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+  <ion-card>
+    <ion-card-title>Hi, {{ userName }}</ion-card-title>
+    <ion-card-subtitle *ngIf="email == getCurrentEmail()"
+      >This is You</ion-card-subtitle
+    >
+    <ion-card-content>
+      <ion-item> <ion-label> Email </ion-label>{{ email }} </ion-item>
+      <ion-item>
+        <ion-label> TMDB Username </ion-label>{{ tmdbUser }}
+      </ion-item>
+      <ion-item>
+        <ion-label> TMDB Acc. ID </ion-label>{{ tmdbAccId }}
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+  <ion-icon size="large" name="create" (click)="editName()"> </ion-icon>
+  <ion-button *ngIf="email == getCurrentEmail()" (click)="editName()"
+    >EDIT name</ion-button
+  >
+  <ion-button (click)="checkdb()"></ion-button>
 </ion-content>

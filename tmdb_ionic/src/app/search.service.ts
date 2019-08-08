@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { Router, NavigationExtras } from "@angular/router";
+import { tmdb } from "../environments/environment";
 
 export enum SearchType {
   all = "",
@@ -16,8 +17,8 @@ export enum SearchType {
 })
 export class SearchService {
   //url = "http://www.omdbapi.com/";
-  url = "https://api.themoviedb.org/3/";
-  apiKey = "79ad210fe32318cf14cfeb7de2cb26fa";
+  // url = "https://api.themoviedb.org/3/";
+  // apiKey = "79ad210fe32318cf14cfeb7de2cb26fa";
 
   result = null;
   item = null;
@@ -25,8 +26,8 @@ export class SearchService {
   searchData(title: string, type: SearchType): Observable<any> {
     this.result = this.http
       .get(
-        `${this.url}search/${type}?api_key=${
-          this.apiKey
+        `${tmdb.tmdbAPI.url}search/${type}?api_key=${
+          tmdb.tmdbAPI.apiKey
         }&language=en-US&page=1&include_adult=false&query=${encodeURI(title)}`
       )
       .pipe(
@@ -43,10 +44,14 @@ export class SearchService {
     console.log("gettting details");
     console.log(
       "gett details",
-      `${this.url}movie/${id}?api_key=${this.apiKey}&language=en-US`
+      `${tmdb.tmdbAPI.url}movie/${id}?api_key=${
+        tmdb.tmdbAPI.apiKey
+      }&language=en-US`
     );
     return this.http.get(
-      `${this.url}movie/${id}?api_key=${this.apiKey}&language=en-US`
+      `${tmdb.tmdbAPI.url}movie/${id}?api_key=${
+        tmdb.tmdbAPI.apiKey
+      }&language=en-US`
     );
   }
 

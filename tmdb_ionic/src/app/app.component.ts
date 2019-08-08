@@ -1,5 +1,10 @@
 import { AuthenticationService } from "./services/authentication.service";
-import { SessionService } from "./services/session.service";
+
+import {
+  AngularFirestore,
+  AngularFirestoreCollection,
+  AngularFirestoreDocument
+} from "@angular/fire/firestore";
 
 import { Platform } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
@@ -17,8 +22,9 @@ export class AppComponent {
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private authService: AuthenticationService,
-    private sessionService: SessionService,
-    private router: Router
+
+    private router: Router,
+    private afs: AngularFirestore
   ) {
     this.initializeApp();
   }

@@ -8,6 +8,7 @@ import { Router } from "@angular/router";
   styleUrls: ["./fb-register.page.scss"]
 })
 export class FbRegisterPage implements OnInit {
+  userName: string;
   email: string;
   password: string;
   constructor(
@@ -16,11 +17,14 @@ export class FbRegisterPage implements OnInit {
   ) {}
 
   async register() {
-    this.authService.fbRegister(this.email, this.password).then(res => {
-      if (res == true) {
-        this.router.navigate(["fb-login"]);
-      }
-    });
+    await console.log("DETAIL", this.userName, this.email, this.password);
+    this.authService
+      .fbRegister(this.userName, this.email, this.password)
+      .then(res => {
+        if (res == true) {
+          this.router.navigate(["fb-login"]);
+        }
+      });
   }
   ngOnInit() {}
 }

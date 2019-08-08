@@ -10,6 +10,9 @@
   > -->
   <ion-button (click)="navigate('search')">Search</ion-button>
   <ion-button (click)="navigate('favourites')">Favourites</ion-button>
-  <ion-button (click)="navigate('profile')">Profile</ion-button>
+  <ion-button (click)="navigate('profile', getCurrentUserEmail())"
+    >Profile</ion-button
+  >
+  <ion-button (click)="navigate('friends')">friends</ion-button>
   <ion-button (click)="logout()">Logout</ion-button>
 </ion-content>

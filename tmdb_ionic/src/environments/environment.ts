@@ -17,7 +17,7 @@ export const environment = {
 export const tmdb = {
   tmdbAPI: {
     apiKey: "79ad210fe32318cf14cfeb7de2cb26fa",
-    domain: "https://api.themoviedb.org/3/"
+    url: "https://api.themoviedb.org/3/"
   }
 };
 /*

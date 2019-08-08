@@ -31,13 +31,21 @@ const routes: Routes = [
     loadChildren: "./favourites/favourites.module#FavouritesPageModule"
   },
   {
-    path: "profile",
+    path: "profile/:email",
     loadChildren: "./profile/profile.module#ProfilePageModule"
+  },
+  {
+    path: "friends",
+    loadChildren: "./friends/friends.module#FriendsPageModule"
   },
   {
     //path: "members/**",
     path: "**",
     redirectTo: "dashboard"
+  },
+  {
+    path: "friends",
+    loadChildren: "./friends/friends.module#FriendsPageModule"
   }
 ];
 @NgModule({

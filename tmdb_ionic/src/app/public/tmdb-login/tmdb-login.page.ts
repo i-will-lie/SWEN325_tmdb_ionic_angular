@@ -18,6 +18,8 @@ export class TmdbLoginPage implements OnInit {
   ngOnInit() {}
 
   async tmdbLogin() {
+    this.tmdbUsername = "joewill";
+    this.tmdbPassword = "abc123456";
     console.log("aaa", this.tmdbUsername, this.tmdbPassword);
     var tmdbSessionId;
     console.log("ress");
@@ -60,7 +62,6 @@ export class TmdbLoginPage implements OnInit {
     //   this.password
     // );
     console.log("END");
-    this.authService.number = 10;
     this.authService.tmdbAuthenticated = true;
 
     const tmdbAccID = await this.authService.tmdbGetAccountID(tmdbSessionId);
@@ -79,6 +80,8 @@ export class TmdbLoginPage implements OnInit {
     );
     console.log("adding tmdbsession");
     this.authService.tmdbAddSession();
+    this.authService.addUser(this.tmdbUsername);
+    this.authService.addAccID(tmdbAccID["id"]);
     this.router.navigate(["members", "dashboard"]);
   }
 }

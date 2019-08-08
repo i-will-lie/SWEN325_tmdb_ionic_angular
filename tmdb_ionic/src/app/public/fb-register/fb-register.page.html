@@ -1,11 +1,14 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>tmdblogin</ion-title>
+    <ion-title>Register</ion-title>
     <ion-buttons><ion-back-button></ion-back-button></ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
+  <ion-item>
+    <ion-input type="string" [(ngModel)]="userName">Uusername</ion-input>
+  </ion-item>
   <ion-item>
     <ion-input type="email" [(ngModel)]="email">Email</ion-input>
   </ion-item>

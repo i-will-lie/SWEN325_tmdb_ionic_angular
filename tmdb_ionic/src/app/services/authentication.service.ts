@@ -1,6 +1,6 @@
 import { UserDatabaseService } from "./user-database.service";
 import { User } from "../models/user";
-import { SessionService } from "./session.service";
+
 import { TmdbUser } from "./../models/tmdbUser";
 import { environment } from "./../../environments/environment.prod";
 import { Platform, ToastController } from "@ionic/angular";
@@ -15,7 +15,7 @@ import { resolve } from "q";
 import { AngularFireDatabase } from "angularfire2/database";
 
 var fbLog = "auth-token";
-var tmdbSessionID = null;
+var currentSessionID = null;
 
 const tmdbURL = "https://api.themoviedb.org/3/";
 const tmdbAPI = "79ad210fe32318cf14cfeb7de2cb26fa";
@@ -31,8 +31,9 @@ export class AuthenticationService {
   //authenticationState = new BehaviorSubject(false);
   //authenticated: boolean = false;
   tmdbToken: string;
-  tmdbSessionID: string;
-  number = 5;
+  currentUser: string;
+  currentSessionID: string;
+  currentTmdbAccID: string;
 
   tmdbAuthenticated = false;
   constructor(
@@ -41,7 +42,6 @@ export class AuthenticationService {
     private afAuth: AngularFireAuth,
     private toast: ToastController,
     private http: HttpClient,
-    private sessionService: SessionService,
     private afDatabase: AngularFireDatabase,
     private userDbService: UserDatabaseService
   ) {
@@ -78,12 +78,13 @@ export class AuthenticationService {
     }
   }
 
-  async fbRegister(email: string, password: string) {
+  async fbRegister(username: string, email: string, password: string) {
     try {
-      await this.afAuth.auth.createUserWithEmailAndPassword(email, password);
+      console.log("reg1 ", username, email, password);
+      this.afAuth.auth.createUserWithEmailAndPassword(email, password);
       console.log("reg ", email, password);
 
-      this.fbAddUser({ email: email, password: password });
+      this.fbAddUser(username, { email: email, password: password });
 
       return true;
     } catch (e) {
@@ -94,11 +95,13 @@ export class AuthenticationService {
     }
   }
 
-  fbAddUser(fbUser: FbUser) {
+  fbAddUser(username: string, fbUser: FbUser) {
     const newUser = {
+      username: username,
       fbUser: fbUser,
       tmdbUser: null,
-      sessionID: -1
+      sessionID: -1,
+      friends: null
     } as User;
 
     //add user to data base
@@ -116,13 +119,17 @@ export class AuthenticationService {
       password: tmdbPassword,
       accountID: tmdbAccountID
     };
+    this.currentTmdbAccID = tmdbAccountID;
+
     console.log("adding user", this.fbUser.email, newTmdbUser);
     this.userDbService.addTmdbUser(this.fbUser.email, newTmdbUser);
   }
 
   tmdbAddSession() {
-    console.log("+s", this.fbUser.email, this.tmdbSessionID);
-    this.userDbService.addTmdbSession(this.fbUser.email, this.tmdbSessionID);
+    console.log("+s", this.fbUser.email, this.currentSessionID);
+    this.userDbService.addTmdbSession(this.fbUser.email, this.currentSessionID);
+    console.log("subscribe next");
+    this.userDbService.subscribeToDb(this.fbUser.email);
   }
 
   async tmdbRequestToken() {
@@ -140,6 +147,7 @@ export class AuthenticationService {
     token: string
   ) {
     console.log(username, password);
+
     const loginData = {
       username: "joewill", //username,
       password: "abc123456", //password,
@@ -164,8 +172,8 @@ export class AuthenticationService {
       })
       .toPromise();
     if (session["success"]) {
-      this.tmdbSessionID = session["session_id"];
-      console.log("sid", this.tmdbSessionID);
+      this.currentSessionID = session["session_id"];
+      console.log("sid", this.currentSessionID);
     }
     return session;
   }
@@ -177,81 +185,9 @@ export class AuthenticationService {
     return tmdbAccID;
   }
 
-  // async tmdbLogin(username: string, password: string) {
-  //   return this.http
-  //     .get(`${tmdbURL}authentication/token/new?api_key=${tmdbAPI}`)
-  //     .toPromise();
-
-  //   var id: string;
-  //   var loginSuccess = false;
-  //   try {
-  //     this.http
-  //       .get(`${tmdbURL}authentication/token/new?api_key=${tmdbAPI}`)
-  //       .toPromise()
-  //       .then(tokenRes => {
-  //         if (!tokenRes["request_token"]) {
-  //           console.log("breaking");
-  //           return; //return tokenRes;
-  //         } else {
-  //           console.log("success");
-  //         }
-
-  //         let loginData = {
-  //           username: "joewill", //username,
-  //           password: "abc123456", //password,
-  //           request_token: tokenRes["request_token"]
-  //         };
-  //         console.log("got token", tokenRes["request_token"]);
-  //         this.http
-  //           .post(
-  //             `${tmdbURL}authentication/token/validate_with_login?api_key=${tmdbAPI}`,
-  //             loginData
-  //           )
-  //           .toPromise()
-  //           .then(loginRes => {
-  //             if (loginRes["success"]) {
-  //               console.log("success login", loginRes);
-  //             } else {
-  //               console.log("failed login", loginRes);
-  //               return; //loginRes;
-  //             }
-  //             // console.log(
-  //             //   `${tmdbURL}authentication/token/validate_with_login?api_key=${tmdbAPI}`,
-  //             //   data
-  //             // );
-  //             console.log("login response", loginRes["request_token"]);
-
-  //             this.http
-  //               .post(
-  //                 `${tmdbURL}authentication/session/new?api_key=${tmdbAPI}`,
-  //                 {
-  //                   request_token: loginRes["request_token"]
-  //                 }
-  //               )
-  //               .toPromise()
-  //               .then(sessionRes => {
-  //                 console.log("sess id", sessionRes, sessionRes["session_id"]);
-  //                 id = sessionRes["session_id"];
-  //                 this.authenticated = true;
-  //                 this.authenticationState.next(true);
-  //                 loginSuccess = true;
-
-  //                 return sessionRes;
-  //               });
-  //           });
-  //       });
-  //     console.log("login success?", loginSuccess);
-  //     return loginSuccess;
-  //     this.authenticationState.next(true);
-  //   } catch (e) {
-  //     console.log("ERRORRRR", e.message);
-  //     return false;
-  //   }
-  // }
-
   async tmdbIsAuthenticated() {
     console.log("tmdbaut", this.tmdbAuthenticated);
-    //return await
+    //return await this.afDatabase.tmdbLoggedOn();
     return this.tmdbAuthenticated;
   }
   // requestTmdbToken() {
@@ -262,15 +198,40 @@ export class AuthenticationService {
   //   });
   // }
 
-  async fbLogut() {
-    this.afAuth.auth.signOut();
-    const res = await this.storage.remove(this.fbUserID);
-    //this.authenticationState.next(false);
-    console.log("fblogout");
-    await this.userDbService.logout(this.fbUser.email);
-    this.tmdbAuthenticated = false;
-    return res;
+  addUser(newUser) {
+    this.currentUser = newUser;
   }
+  addAccID(newID) {
+    this.currentTmdbAccID = newID;
+  }
+
+  getCurrentUser() {
+    return this.currentUser;
+  }
+  async fbLogut() {
+    const res = await this.userDbService.tmdbLoggedOn(this.fbUser.email);
+
+    this.userDbService.dbLogout(this.fbUser.email);
+    this.afAuth.auth.signOut();
+    console.log("logged on", res);
+    // this.afAuth.auth.signOut();
+    // const res = await this.storage.remove(this.fbUserID);
+    // //this.authenticationState.next(false);
+    // console.log("fblogout");
+    // await this.userDbService.logout(this.fbUser.email);
+    // this.tmdbAuthenticated = false;
+    // return res;
+  }
+  getAccID() {
+    return this.currentTmdbAccID;
+  }
+  getSessionID() {
+    return this.currentSessionID;
+  }
+  getEmail() {
+    return this.fbUser.email;
+  }
+
   // fbIsAuthenticated() {
   //   console.log("checking auth state", this.authenticationState);
   //   return this.authenticationState.value;

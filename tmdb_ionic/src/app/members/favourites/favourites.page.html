@@ -1,9 +1,49 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>favourites</ion-title>
+    <ion-title>Favourites</ion-title>
+    <ion-back-button></ion-back-button>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content padding>
+  <ion-item>
+    <ion-label>Select Favourites list</ion-label>
+    <ion-select debounce="500" (ionChange)="getFavourites(favType)">
+      <ion-select-option value="movies" selected="true"
+        >Movie</ion-select-option
+      >
+      <ion-select-option value="tv">Series</ion-select-option>
+      <ion-select-option value="tv/episode">Episode</ion-select-option>
+    </ion-select>
+  </ion-item>
 
+  <ion-list
+    >Results
+    <ion-item
+      button
+      *ngFor="let item of result | async"
+      [routerLink]="['/', 'members', 'detail', item.id]"
+    >
+      <ion-list>
+        <ion-label>{{ item.title }}</ion-label>
+        <ion-label>{{ item.release_date }}</ion-label>
+        <ion-label>{{ item.vote_average }}</ion-label>
+      </ion-list>
+      <ion-thumbnail
+        ><ion-img
+          [src]="'https://image.tmdb.org/t/p/original' + item?.poster_path"
+        >
+        </ion-img
+      ></ion-thumbnail>
+    </ion-item>
+    <!-- http://localhost:8100/getImage(item.poster_path) -->
+    <!--<ion-item
+      button
+      *ngFor="let item of results | async"
+      [routerLink]="['/movies/', item.id]"
+      click="gotoItem(, item)"
+    >
+      {{ item.title }}
+    </ion-item>-->
+  </ion-list>
 </ion-content>

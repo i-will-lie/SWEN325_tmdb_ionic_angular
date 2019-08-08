@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>friends</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-searchbar [(ngModel)]="searchFriend" (ionChange)="searchChanged()"
+      >Find Friends</ion-searchbar
+    >
+  </ion-item>
+
+  <ion-list
+    >Results
+    <ion-item
+      button
+      *ngFor="let item of result"
+      [routerLink]="['/', 'members', 'profile', item.fbUser.email]"
+    >
+      <ion-label>{{ item?.fbUser.email }}</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
