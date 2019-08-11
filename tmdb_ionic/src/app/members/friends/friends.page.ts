@@ -1,7 +1,11 @@
+import { UserDatabaseService } from "./../../services/user-database.service";
+import { Friend } from "./../../models/friend";
+import { SessionService } from "./../../services/session.service";
 import { FriendsService } from "./../../services/friends.service";
 import { Component, OnInit } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { AngularFireDatabase, AngularFireList } from "angularfire2/database";
+
 @Component({
   selector: "app-friends",
   templateUrl: "./friends.page.html",
@@ -9,14 +13,24 @@ import { AngularFireDatabase, AngularFireList } from "angularfire2/database";
 })
 export class FriendsPage implements OnInit {
   searchFriend: string = "";
-  result = null;
-  sub;
+  friendResult;
+  currentFriends = [];
+  searchSub;
   constructor(
-    private friendService: FriendsService,
-    private afStore: AngularFirestore
+    private friendServ: FriendsService,
+    private afStore: AngularFirestore,
+    private sessionServ: SessionService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    // this.friendServ.setFriends().subscribe(res => {
+    //   if (res["friends"]) {
+    //     this.currentFriends = res["friends"];
+    //   } else {
+    //     this.currentFriends = [];
+    //   }
+    // });
+  }
 
   async searchChanged() {
     // this.result = await this.friendService.findFriends(this.searchFriend);
@@ -24,16 +38,33 @@ export class FriendsPage implements OnInit {
     //   console.log("frein res", res, res[0]);
     //   this.result = res;
     // });
-    this.sub = await this.afStore
+    this.searchSub = await this.afStore
       .collection("UserInfo", ref =>
-        ref.where("username", "==", this.searchFriend)
+        ref.where("tmdbUser.username", "==", this.searchFriend)
       )
       .valueChanges()
       .subscribe(res => {
-        console.log("frein res", res, res[0]);
-        this.result = res;
+        // console.log("frein res", res, res[0]);
+        if (res[0]) {
+          this.friendResult = res[0];
+        } else {
+          this.friendResult = null;
+        }
       });
-
     //console.log(this.result, "res");
+  }
+  addFriend(email, username, accountID, favouriteID) {
+    //console.log("add friend", email, username, accountID);
+    this.friendServ.addFriend(email, username, accountID, favouriteID);
+  }
+
+  getCurrentFriends() {
+    //console.log("c friends", this.friendServ.currentFriends);
+    const friend = this.friendServ.currentFriends;
+    if (friend[0]) {
+      //console.log("found", friend[0]["email"]);
+      return friend;
+    }
+    return [];
   }
 }

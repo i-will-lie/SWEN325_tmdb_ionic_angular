@@ -4,21 +4,33 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-item>
-    <ion-searchbar [(ngModel)]="searchFriend" (ionChange)="searchChanged()"
-      >Find Friends</ion-searchbar
-    >
+<ion-content padding>
+  <ion-searchbar [(ngModel)]="searchFriend" (ionChange)="searchChanged()"
+    >Find User</ion-searchbar
+  ><br />
+
+  <ion-label>Results</ion-label>
+  <ion-item
+    button
+    *ngIf="friendResult"
+    [routerLink]="['/', 'members', 'profile', friendResult.fbUser.email]"
+  >
+    <ion-label>{{ friendResult?.fbUser.email }}</ion-label>
+  </ion-item>
+  <ion-item *ngIf="friendResult == null">
+    No User Found
   </ion-item>
 
-  <ion-list
-    >Results
-    <ion-item
-      button
-      *ngFor="let item of result"
-      [routerLink]="['/', 'members', 'profile', item.fbUser.email]"
-    >
-      <ion-label>{{ item?.fbUser.email }}</ion-label>
-    </ion-item>
-  </ion-list>
+  <ion-item
+    >Your Friends
+    <ion-list>
+      <ion-item
+        button
+        *ngFor="let friend of getCurrentFriends()"
+        [routerLink]="['/', 'members', 'profile', friend.email]"
+      >
+        <ion-label>{{ friend?.email }}</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-item>
 </ion-content>

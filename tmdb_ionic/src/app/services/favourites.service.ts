@@ -1,3 +1,5 @@
+import { List } from "./../models/list";
+import { SessionService } from "./session.service";
 import { FavouriteType } from "./../members/favourites/favourites.page";
 import { HttpClient } from "@angular/common/http";
 import { tmdb } from "./../../environments/environment";
@@ -14,45 +16,121 @@ import { map } from "rxjs/operators";
 })
 export class FavouritesService {
   userDb;
+  resultSub;
   result;
+  personalListID;
 
   constructor(
-    private userDbService: UserDatabaseService,
-    private firestore: AngularFirestore,
+    private userDbServ: UserDatabaseService,
+    private afStore: AngularFirestore,
     private http: HttpClient,
-    private auth: AuthenticationService
+    private auth: AuthenticationService,
+    private sessionServ: SessionService
   ) {}
 
   ngOnInit() {}
 
-  getFavourites(targetUsername: string, type: string) {
-    const sessionID = this.auth.getSessionID();
-    const accID = this.auth.getAccID();
+  dbUserInfo;
+  //userName;
+  email;
+  tmdbUser;
+  tmdbAccId;
+  tmdbFavId;
+
+  setCurrentUser(email) {
+    console.log("SETTING EMAIL", email);
+    this.dbUserInfo = this.afStore
+      .collection("UserInfo")
+      .doc(email)
+      .valueChanges()
+      .subscribe(res => {
+        //this.userName = res["username"];
+        this.email = res["fbUser"]["email"];
+        this.tmdbUser = res["tmdbUser"]["username"];
+        this.tmdbAccId = res["tmdbUser"]["accountID"];
+        this.tmdbFavId = res["favourites"];
+        console.log(
+          "emailllllllllllll",
+          this.email,
+          this.tmdbUser,
+          this.tmdbAccId,
+          this.tmdbFavId
+        );
+        // console.log(this.userDbService.dbInfo);
+      });
+  }
+
+  initFavServ() {
+    // this.afStore
+    //   .collection("UserInfo")
+    //   .doc(this.sessionServ.email)
+    //   .valueChanges()
+    //   .subscribe(res => {
+    //     this.personalListID = res["favourites"];
+    //     if (res["favourites"] == null) {
+    //       console.log("IS NULL");
+    //       //this.initFavourites("favourites");
+    //     }
+    //   });
+  }
+
+  async getFavourites(listID: string) {
+    const sessionID = this.sessionServ.sessionID;
+    // const accID = this.sessionServ.accountID;
+    // console.log(
+    //   sessionID,
+    //   accID,
+    //   type,
+    //   "url",
+    //   `${tmdb.tmdbAPI.url}account/${accID}/favorite/${type}?api_key=${
+    //     tmdb.tmdbAPI.apiKey
+    //   }&session_id=${sessionID}`
+    // );
+
+    // return this.http
+    //   .get(
+    //     `${tmdb.tmdbAPI.url}account/${accID}/favorite/${type}?api_key=${
+    //       tmdb.tmdbAPI.apiKey
+    //     }&session_id=${sessionID}`
+    //   )
+    //   .pipe(
+    //     map(results => {
+    //       console.log("raw", results["results"]);
+    //       return results["results"];
+    //     })
+    //   );
+
     console.log(
       sessionID,
-      accID,
-      type,
+      listID,
+
       "url",
-      `${tmdb.tmdbAPI.url}account/${accID}/favorite/${type}?api_key=${
+      `${tmdb.tmdbAPI.url}list/${listID}?api_key=${
         tmdb.tmdbAPI.apiKey
-      }&session_id=${sessionID}`
+      }&session_id=${sessionID}&language=en-US&page=1`
     );
 
-    this.result = this.http
+    //api.themoviedb.org/3/account/{account_id}/lists?api_key=<<api_key>>&language=en-US&page=1
+
+    this.result = await this.http
       .get(
-        `${tmdb.tmdbAPI.url}account/${accID}/favorite/${type}?api_key=${
+        `${tmdb.tmdbAPI.url}list/${listID}?api_key=${
           tmdb.tmdbAPI.apiKey
         }&session_id=${sessionID}`
       )
-      .pipe(
-        map(results => {
-          console.log("raw", results["results"]);
-          return results["results"];
-        })
-      );
+      .toPromise();
 
-    return this.result;
+    console.log("RES", this.result["items"]);
+    // .pipe(
+    //   map(results => {
+    //     console.log("raw", results["items"]);
+    //     return results["results"];
+    //   })
+    // );
+
+    return this.result["items"];
   }
+  getLists() {}
 
   addFriend() {}
 }

@@ -25,7 +25,7 @@ export class SearchPage implements OnInit {
 
   searchChanged() {
     this.results = this.searchService.searchData(this.searchTerm, this.type);
-
+    console.log("fdsfds", this.results);
     //this.results.subscribe(res => {    })
   }
 

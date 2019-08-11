@@ -25,27 +25,5 @@ export class AppComponent {
 
     private router: Router,
     private afs: AngularFirestore
-  ) {
-    this.initializeApp();
-  }
-
-  initializeApp() {
-    console.log("init app");
-
-    // this.platform.ready().then(() => {
-    //   console.log("ready");
-    //   this.statusBar.styleDefault();
-    //   this.splashScreen.hide();
-    //   this.authService.authenticationState.subscribe(state => {
-    //     console.log("AUTH CHANGE", state);
-    //     if (state) {
-    //       console.log("state true");
-    //       this.router.navigate(["members", "dashboard"]);
-    //     } else {
-    //       console.log("state false");
-    //       this.router.navigate(["fb-login"]);
-    //     }
-    //   });
-    // });
-  }
+  ) {}
 }

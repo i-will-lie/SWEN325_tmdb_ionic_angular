@@ -1,23 +1,55 @@
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { tmdb } from "./../../environments/environment";
+import { map } from "rxjs/operators";
+import { SessionService } from "./session.service";
+import { Observable } from "rxjs";
 import { User } from "./../models/user";
-import { Injectable } from "@angular/core";
+import { Injectable, Type } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
 
 @Injectable({
   providedIn: "root"
 })
 export class UserDatabaseService {
-  dbUser;
+  dbUser: Observable<any>;
   dbInfo;
-  constructor(private firestore: AngularFirestore) {}
+  favSub;
+  favouriteListID;
+
+  constructor(
+    private firestore: AngularFirestore,
+    private sessionServ: SessionService,
+    private http: HttpClient
+  ) {}
+
+  OnInit() {}
 
   createNewUser(user: User) {
-    var v = this.firestore
+    return this.firestore
       .collection("UserInfo")
       .doc(user.fbUser.email)
       .set(user);
-
-    return v;
   }
+
+  addFriendCollection(email) {
+    this.firestore
+      .collection("UserInfo")
+      .doc(email)
+      .collection("friends")
+      .doc(email)
+      .set(-1);
+  }
+
+  // test() {
+  //   console.log(
+  //     "BLABJFD",
+  //     this.firestore
+  //       .collection("UserInfo")
+  //       .doc(this.sessionServ.email)
+  //       .snapshotChanges()
+  //       .map()
+  //   );
+  // }
 
   addTmdbUser(fbUserEmail, tmdbUser) {
     console.log("fb", fbUserEmail, "tmdb", tmdbUser);
@@ -29,6 +61,8 @@ export class UserDatabaseService {
 
   addTmdbSession(fbUserEmail, sessionID) {
     console.log("updatessid", fbUserEmail, sessionID);
+    console.log("lo", this.getIDFromEmail(fbUserEmail));
+    this.sessionServ.sessionID = sessionID;
     this.firestore
       .collection("UserInfo")
       .doc(fbUserEmail)
@@ -54,7 +88,7 @@ export class UserDatabaseService {
     //return res;
   }
 
-  async subscribeToDb(fbUserEmail) {
+  async connectToDb(fbUserEmail) {
     console.log("subscribing");
     this.dbUser = await this.firestore
       .collection("UserInfo")
@@ -63,7 +97,7 @@ export class UserDatabaseService {
     // .subscribe(res => {
     //   this.dbInfo = res;
     // });
-    console.log("db ___Uder", this.dbUser);
+    await console.log("db ___Uder", this.dbUser);
   }
 
   updateUsername(fbUserEmail, newName) {
@@ -79,5 +113,62 @@ export class UserDatabaseService {
   getDbUser() {
     var user;
     this.dbUser;
+  }
+
+  async getIDFromEmail(email: string) {
+    var id;
+    await this.firestore
+      .collection("UserInfo")
+      .doc(email)
+      .valueChanges()
+      .subscribe(res => {
+        id = res["accountID"];
+      });
+
+    return id;
+  }
+
+  async getListId() {
+    console.log(
+      "FSDFDSF",
+      `${tmdb.tmdbAPI.url}account/${this.sessionServ.accountID}/lists?api_key=${
+        tmdb.tmdbAPI.apiKey
+      }&session_id=${this.sessionServ.sessionID}`
+    );
+    let list = await this.http
+      .get(
+        `${tmdb.tmdbAPI.url}account/${
+          this.sessionServ.accountID
+        }/lists?api_key=${tmdb.tmdbAPI.apiKey}&session_id=${
+          this.sessionServ.sessionID
+        }`
+      )
+      .toPromise();
+
+    console.log("ResSSS", list);
+    const id = list["results"][0]["id"];
+
+    console.log("result", id);
+    console.log("LIST id ", id);
+
+    this.firestore
+      .collection("UserInfo")
+      .doc(this.sessionServ.email)
+      .update({ favourites: id });
+    console.log("init fav222222222222222222222");
+  }
+
+  setFavListID() {
+    this.favSub = this.firestore
+      .collection("UserInfo")
+      .doc()
+      .valueChanges()
+      .subscribe(res => {
+        console.log("FAV res", res["favourites"]);
+        this.favouriteListID = res["favourites"];
+      });
+  }
+  logout() {
+    //this.dbUser.unsubscribe();
   }
 }

@@ -27,7 +27,7 @@ const routes: Routes = [
     loadChildren: "./detail/detail.module#DetailPageModule"
   },
   {
-    path: "favourites",
+    path: "favourites/:accId/:username/:listID",
     loadChildren: "./favourites/favourites.module#FavouritesPageModule"
   },
   {
@@ -42,10 +42,6 @@ const routes: Routes = [
     //path: "members/**",
     path: "**",
     redirectTo: "dashboard"
-  },
-  {
-    path: "friends",
-    loadChildren: "./friends/friends.module#FriendsPageModule"
   }
 ];
 @NgModule({

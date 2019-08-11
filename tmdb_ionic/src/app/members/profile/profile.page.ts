@@ -1,9 +1,11 @@
+import { FavouritesService } from "./../../services/favourites.service";
 import { AuthenticationService } from "./../../services/authentication.service";
 import { FriendsService } from "./../../services/friends.service";
 import { Component, OnInit } from "@angular/core";
 import { UserDatabaseService } from "./../../services/user-database.service";
 import { AlertController } from "@ionic/angular";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
+
 @Component({
   selector: "app-profile",
   templateUrl: "./profile.page.html",
@@ -15,7 +17,10 @@ export class ProfilePage implements OnInit {
     private alert: AlertController,
     private activatedRoute: ActivatedRoute,
     private friendsServ: FriendsService,
-    private authServ: AuthenticationService
+    private authServ: AuthenticationService,
+    public friendServ: FriendsService,
+    private router: Router,
+    private favouriteServ: FavouritesService
   ) {}
 
   dbUserInfo;
@@ -23,6 +28,7 @@ export class ProfilePage implements OnInit {
   email;
   tmdbUser;
   tmdbAccId;
+  tmdbFavId;
   friends;
 
   profile;
@@ -34,14 +40,22 @@ export class ProfilePage implements OnInit {
       console.log("new deatil", result);
     });
 
-    this.dbUserInfo = this.friendsServ.getProfile(email).subscribe(res => {
-      this.userName = res["username"];
-      this.email = res["fbUser"]["email"];
-      this.tmdbUser = res["tmdbUser"]["username"];
-      this.tmdbAccId = res["tmdbUser"]["accountID"];
-      console.log("email", this.email);
-      console.log(this.userDbService.dbInfo);
-    });
+    this.favouriteServ.setCurrentUser(email);
+    // this.dbUserInfo = this.friendsServ.getProfile(email).subscribe(res => {
+    //   this.userName = res["username"];
+    //   this.email = res["fbUser"]["email"];
+    //   this.tmdbUser = res["tmdbUser"]["username"];
+    //   this.tmdbAccId = res["tmdbUser"]["accountID"];
+    //   this.tmdbFavId = res["favourites"];
+    //   console.log(
+    //     "email",
+    //     this.email,
+    //     this.userName,
+    //     res["favourites"],
+    //     this.tmdbFavId
+    //   );
+    //   console.log(this.userDbService.dbInfo);
+    //});
 
     // console.log("un", dbUserInfo["username"]);
     // this.userName = dbUserInfo["username"];
@@ -103,7 +117,34 @@ export class ProfilePage implements OnInit {
     await alert.present();
   }
 
+  addFriend(email, username, accountID, favouriteID) {
+    console.log("profile page add friend", email, username, accountID);
+    this.friendServ.addFriend(email, username, accountID, favouriteID);
+  }
+
+  removeFriend(email) {
+    this.friendServ.removeFriend(email);
+  }
+
   getCurrentEmail() {
     return this.authServ.getEmail();
+  }
+
+  haveFriend() {
+    return this.friendServ.haveFriend(this.email);
+  }
+
+  gotoFavourites() {
+    let fav = this.favouriteServ.tmdbFavId;
+    console.log("p ro f", "members", "favourites", this.tmdbAccId, fav);
+    this.router
+      .navigate([
+        "members",
+        "favourites",
+        this.favouriteServ.tmdbAccId,
+        this.favouriteServ.tmdbUser,
+        fav
+      ])
+      .then(res => console.log(res));
   }
 }

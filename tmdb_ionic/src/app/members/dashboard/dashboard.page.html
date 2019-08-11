@@ -9,8 +9,18 @@
     >ToSerach</ion-button
   > -->
   <ion-button (click)="navigate('search')">Search</ion-button>
-  <ion-button (click)="navigate('favourites')">Favourites</ion-button>
-  <ion-button (click)="navigate('profile', getCurrentUserEmail())"
+  <ion-button
+    (click)="
+      navigateToFavourite(
+        'favourites',
+        getCurrentAccId(),
+        getCurrentUsername(),
+        getCurrentListID()
+      )
+    "
+    >Favourites</ion-button
+  >
+  <ion-button (click)="navigateToProfile('profile', getCurrentUserEmail())"
     >Profile</ion-button
   >
   <ion-button (click)="navigate('friends')">friends</ion-button>

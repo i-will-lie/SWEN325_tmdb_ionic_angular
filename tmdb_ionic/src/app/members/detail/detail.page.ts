@@ -16,7 +16,7 @@ export class DetailPage implements OnInit {
   // url = "https://image.tmdb.org/t/p/original/f2R11Ys1asseqyp5fnIMFC6ytE4.jpg";
   constructor(
     private activatedRoute: ActivatedRoute,
-    private service: SearchService,
+    private searchServ: SearchService,
     private http: HttpClient
   ) {
     //console.log("hi", service.result);
@@ -24,7 +24,7 @@ export class DetailPage implements OnInit {
   ngOnInit() {
     let id = this.activatedRoute.snapshot.paramMap.get("id");
     console.log("new deatil");
-    this.service.getDetails(id).subscribe(result => {
+    this.searchServ.getDetails(id).subscribe(result => {
       this.itemDetails = result;
     });
     //this.getAccount();

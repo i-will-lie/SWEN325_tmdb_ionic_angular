@@ -7,7 +7,6 @@
 
 <ion-content>
   <ion-card>
-    <ion-card-title>Hi, {{ userName }}</ion-card-title>
     <ion-card-subtitle *ngIf="email == getCurrentEmail()"
       >This is You</ion-card-subtitle
     >
@@ -25,5 +24,18 @@
   <ion-button *ngIf="email == getCurrentEmail()" (click)="editName()"
     >EDIT name</ion-button
   >
-  <ion-button (click)="checkdb()"></ion-button>
+
+  <ion-button
+    *ngIf="!haveFriend()"
+    (click)="addFriend(email, tmdbUser, tmdbAccId)"
+    >Add</ion-button
+  >
+
+  <ion-button *ngIf="haveFriend()" (click)="removeFriend(email)"
+    >Remove</ion-button
+  >
+
+  <ion-button (click)="gotoFavourites()">
+    Favourites
+  </ion-button>
 </ion-content>

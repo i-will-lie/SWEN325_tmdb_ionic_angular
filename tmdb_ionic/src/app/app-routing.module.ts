@@ -18,19 +18,23 @@ const routes: Routes = [
 
   {
     path: "tmdb-login",
-    //canActivate: [AngularFireAuthGuard],
+    canActivate: [AngularFireAuthGuard],
     loadChildren: "./public/tmdb-login/tmdb-login.module#TmdbLoginPageModule"
   },
   {
     path: "members",
-    //canActivate: [AngularFireAuthGuard, TmdbAuthGuard],
+    canActivate: [AngularFireAuthGuard, TmdbAuthGuard],
     loadChildren: "./members/member-routing.module#MemberRoutingModule"
   },
   {
     path: "**",
     redirectTo: "fb-login"
   },
-  { path: 'reset-password', loadChildren: './public/reset-password/reset-password.module#ResetPasswordPageModule' }
+  {
+    path: "reset-password",
+    loadChildren:
+      "./public/reset-password/reset-password.module#ResetPasswordPageModule"
+  }
 ];
 
 @NgModule({
