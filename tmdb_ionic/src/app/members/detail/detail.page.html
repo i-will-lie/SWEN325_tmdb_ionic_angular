@@ -17,11 +17,24 @@
       Genres
       <li *ngFor="let genre of itemGenres">help{{ genre.name }}</li>
     </ul>
-    <ion-label> Vote Count {{ itemDetails?.count }}</ion-label>
-    <ion-label>Avg Rating {{ itemDetails?.vote_average }}</ion-label>
-    <ion-label>
-      <ion-item>Your Rating {{ userRating }}</ion-item></ion-label
-    >
+    <ion-grid>
+      <ion-row
+        ><ion-col
+          ><ion-label>
+            Vote Count {{ itemDetails?.vote_count }}</ion-label
+          ></ion-col
+        >
+        <ion-col
+          ><ion-label
+            >Avg Rating {{ itemDetails?.vote_average }}</ion-label
+          ></ion-col
+        >
+      </ion-row>
+
+      <ion-label>
+        <ion-item>Your Rating {{ userRating }}</ion-item></ion-label
+      >
+    </ion-grid>
 
     <ion-img
       (click)="viewImage()"

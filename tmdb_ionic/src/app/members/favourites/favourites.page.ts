@@ -1,3 +1,4 @@
+import { MenusService } from "./../../services/menus.service";
 import { HttpClient } from "@angular/common/http";
 import { FriendsService } from "./../../services/friends.service";
 import { SessionService } from "./../../services/session.service";
@@ -31,7 +32,8 @@ export class FavouritesPage implements OnInit {
     private favouriteServ: FavouritesService,
     private sessionServ: SessionService,
     private activatedRoute: ActivatedRoute,
-    private friendServ: FriendsService
+    private friendServ: FriendsService,
+    public menu: MenusService
   ) {}
 
   async ngOnInit() {

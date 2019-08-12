@@ -1,3 +1,5 @@
+import { MenusService } from "./../../services/menus.service";
+import { SearchService } from "./../../search.service";
 import { FavouritesService } from "./../../services/favourites.service";
 import { map } from "rxjs/operators";
 import { TmdbAuthenticationService } from "./../../services/tmdb-authentication.service";
@@ -25,7 +27,9 @@ export class TmdbLoginPage implements OnInit {
     private userDbServ: UserDatabaseService,
     private tmdbAuthServ: TmdbAuthenticationService,
     private friendServ: FriendsService,
-    private favouriteServ: FavouritesService
+    private favouriteServ: FavouritesService,
+    private searchServ: SearchService,
+    private menu: MenusService
   ) {}
 
   async ngOnInit() {
@@ -33,26 +37,36 @@ export class TmdbLoginPage implements OnInit {
     this.tmdbPassword = "";
     this.checkIfHaveDetails();
   }
-
+  /**
+   * Check if there are existing TMDB login details in the firebase database.
+   * Attempt to automatically login.
+   */
   async checkIfHaveDetails() {
-    this.loginSub = await this.userDbServ.dbUser.subscribe(res => {
-      console.log("CHECKING DETAILS");
-      //console.log("tUSRER", res["tmdbUser"]);
+    //this.menu.presentLoading().then(load => {
+    this.menu.presentToast("Checking Existing Details");
+    //subscribe to the firebase database to check if there are existing credentials.
+    this.loginSub = this.userDbServ.dbUser.subscribe(res => {
+      //if credentials exist login using credentials from firebase.
+      // load.dismiss();
       if (res["tmdbUser"] != null) {
+        this.menu.presentToast("Logging in with Existing Details");
         (this.tmdbUsername = res["tmdbUser"]["username"]),
           (this.tmdbPassword = res["tmdbUser"]["password"]);
+
         this.tmdbLogin();
       }
     });
+    //});
   }
 
   async tmdbLogin() {
-    console.log("setting auth sub");
-    await this.tmdbAuthServ.setAuthSub();
+    this.menu.presentLoading().then(async res => {
+      await this.tmdbAuthServ.setAuthSub();
 
-    // this.tmdbUsername = "joewill";
-    // this.tmdbPassword = "abc123456";
-    // console.log("aaa", this.tmdbUsername, this.tmdbPassword);
+      this.menu.loading.dismiss();
+    });
+    console.log("setting auth sub");
+
     var tmdbSessionId;
 
     const tokenReqRes = await this.tmdbAuthServ.tmdbRequestToken();
@@ -115,6 +129,7 @@ export class TmdbLoginPage implements OnInit {
       this.sessionServ.email,
       this.sessionServ.sessionID
     );
+    this.menu.loading.dismiss();
     this.authComplete();
     //console.log("lo", this.userDbServ.getIDFromEmail(this.sessionServ.email));
     //this.tmdbAuthServ.addUser(this.tmdbUsername);
@@ -128,6 +143,8 @@ export class TmdbLoginPage implements OnInit {
     this.userDbServ.getListId();
     this.favouriteServ.setRatedMovies();
     this.favouriteServ.setRatedTV();
+    //this.searchServ.getPopular();
+    this.menu.loading.dismiss();
     this.router.navigate(["members", "dashboard"]);
   }
 }

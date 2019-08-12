@@ -22,6 +22,7 @@ export class SearchService {
 
   result = null;
   item = null;
+  popular;
   constructor(private http: HttpClient) {}
   searchData(title: string, type: SearchType): Observable<any> {
     console.log(
@@ -61,18 +62,28 @@ export class SearchService {
       }&language=en-US`
     );
   }
+  getRandomMovie() {
+    const index = this.generateNumber(this.popular.length);
+    const item = this.popular[index]["id"];
+    return this.getDetails("movie", item).toPromise();
+  }
+  async getPopular() {
+    console.log(
+      `${tmdb.tmdbAPI.url}movie/popular?api_key=${
+        tmdb.tmdbAPI.apiKey
+      }&language=en-US&page=1`
+    );
+    return await this.http
+      .get(
+        `${tmdb.tmdbAPI.url}movie/popular?api_key=${
+          tmdb.tmdbAPI.apiKey
+        }&language=en-US&page=1`
+      )
+      .toPromise();
+  }
 
-  // getImage(itemDetails) {
-  //   var p = "/f2R11Ys1asseqyp5fnIMFC6ytE4.jpg";
-  //   //return this.searchService.getImage(path);
-  //   console.log("posterpath", itemDetails["poster_path"]);
-  //   return (
-  //     "https://image.tmdb.org/t/p/original" + p //this.itemDetails["poster_path"]
-  //   );
-  // }
-
-  // getImage(path) {
-  //   //console.log(`https://image.tmdb.org/t/p/original${path}`);
-  //   return `https://image.tmdb.org/t/p/original${path}`;
-  // }
+  generateNumber(length) {
+    console.log("get random");
+    return Math.floor(Math.random() * length);
+  }
 }

@@ -1,31 +1,58 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>dashboard</ion-title>
+    <ion-title>Welcome {{ getCurrentUsername() }}</ion-title>
   </ion-toolbar>
+  <ion-row
+    ><ion-card-header>{{ randomItem?.title }}</ion-card-header
+    ><ion-item (click)="navigateToDetail()">Go View</ion-item></ion-row
+  >
 </ion-header>
-
 <ion-content>
-  <!-- <ion-button routerLink="/members/search" routerDirection="forward"
-    >ToSerach</ion-button
-  > -->
-  <ion-button (click)="navigate('search')">Search</ion-button>
-  <ion-button
-    (click)="
-      navigateToFavourite(
-        'favourites',
-        getCurrentAccId(),
-        getCurrentUsername(),
-        getCurrentListID()
-      )
-    "
-    >Favourites</ion-button
-  >
-  <ion-button (click)="navigateToProfile('profile', getCurrentUserEmail())"
-    >Profile</ion-button
-  >
-  <ion-button (click)="navigate('friends')">friends</ion-button>
-  <ion-button (click)="logout()">Logout</ion-button>
+  <ion-img
+    (click)="getRandomMovie()"
+    [src]="'https://image.tmdb.org/t/p/original' + randomItem?.poster_path"
+  ></ion-img>
 </ion-content>
+
 <ion-footer>
-  <ion-button (click)="presentActionSheet()">click</ion-button>
+  <ion-grid>
+    <ion-row>
+      <ion-col
+        ><ion-item class="button" (click)="navigate('search')"
+          >Search</ion-item
+        ></ion-col
+      >
+      <ion-col
+        ><ion-item
+          class="button"
+          (click)="
+            navigateToFavourite(
+              'favourites',
+              getCurrentAccId(),
+              getCurrentUsername(),
+              getCurrentListID()
+            )
+          "
+          >Favourites</ion-item
+        ></ion-col
+      >
+    </ion-row>
+    <ion-row>
+      <ion-col
+        ><ion-item
+          class="button"
+          (click)="navigateToProfile('profile', getCurrentUserEmail())"
+          >Profile</ion-item
+        ></ion-col
+      >
+      <ion-col
+        ><ion-item class="button" (click)="navigate('friends')"
+          >Friends</ion-item
+        ></ion-col
+      ></ion-row
+    >
+    <ion-row>
+      <ion-item class="button" (click)="logout()">Logout</ion-item></ion-row
+    >
+  </ion-grid>
 </ion-footer>

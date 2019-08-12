@@ -1,7 +1,7 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar
+    >><ion-back-button>Back</ion-back-button>
     <ion-title>My Movie Search</ion-title>
-    <ion-back-button></ion-back-button>
   </ion-toolbar>
 </ion-header>
 
@@ -24,8 +24,7 @@
     </ion-select>
   </ion-item>
 
-  <ion-list
-    >Results
+  <ion-list>
     <ion-item
       button
       *ngFor="let item of results | async"
@@ -54,3 +53,9 @@
     </ion-item>-->
   </ion-list>
 </ion-content>
+<ion-footer>
+  <ion-row>
+    <ion-button (click)="menu.showMenu()">MENU</ion-button
+    ><ion-toolbar><ion-back-button>Back</ion-back-button></ion-toolbar></ion-row
+  >
+</ion-footer>

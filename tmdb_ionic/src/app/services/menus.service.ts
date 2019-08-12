@@ -2,28 +2,38 @@ import { FavouritesService } from "./favourites.service";
 import { SessionService } from "./session.service";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
-import { ActionSheetController } from "@ionic/angular";
+import {
+  ActionSheetController,
+  ToastController,
+  AlertController,
+  LoadingController
+} from "@ionic/angular";
 import { AuthenticationService } from "./authentication.service";
 
 @Injectable({
   providedIn: "root"
 })
 export class MenusService {
-  actionSheet;
+  loading;
+  toast;
+  alert;
 
   constructor(
     private router: Router,
     private asCtrl: ActionSheetController,
     private sessionServ: SessionService,
     private favouriteServ: FavouritesService,
-    private authServ: AuthenticationService
+    private authServ: AuthenticationService,
+    private toastCtrl: ToastController,
+    private alertCtrl: AlertController,
+    private loadCtrl: LoadingController
   ) {}
   /**
    * ActionSheet used as main navigation menu in app.
    * When selected navigates to the selected page.
    */
   showMenu() {
-    this.actionSheet = this.asCtrl
+    const actionSheet = this.asCtrl
       .create({
         header: "Menu",
         buttons: [
@@ -88,5 +98,27 @@ export class MenusService {
       .then(actionsheet => {
         actionsheet.present();
       });
+  }
+
+  async presentLoading() {
+    const loading = await this.loadCtrl.create({
+      message: "Please Wait"
+    });
+    return this.loading.present();
+  }
+
+  async presentToast(message) {
+    this.toast = await this.toastCtrl.create({
+      message: message,
+      duration: 2000,
+      position: "top",
+      showCloseButton: true,
+      translucent: true
+    });
+    this.toast.present();
+  }
+
+  presentAlert() {
+    this.alert = this.alertCtrl.create({});
   }
 }

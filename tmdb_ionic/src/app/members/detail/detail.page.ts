@@ -117,7 +117,7 @@ export class DetailPage implements OnInit {
    * ActionSheet managing rating and favourites.
    */
   async showActions() {
-    this.actionSheet = await this.asCtrl
+    const actionSheet = await this.asCtrl
       .create({
         header: "Actions",
         buttons: [

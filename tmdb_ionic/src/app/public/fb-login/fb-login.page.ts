@@ -1,3 +1,6 @@
+import { MenusService } from "./../../services/menus.service";
+import { MenuController } from "@ionic/angular";
+import { MenuController } from "@ionic/angular";
 import { UserDatabaseService } from "./../../services/user-database.service";
 import { SessionService } from "./../../services/session.service";
 import { Router } from "@angular/router";
@@ -19,7 +22,8 @@ export class FbLoginPage implements OnInit {
     private fbAuth: AuthenticationService,
     private router: Router,
     private sessionServ: SessionService,
-    private userDbServ: UserDatabaseService
+    private userDbServ: UserDatabaseService,
+    private menu: MenusService
   ) {}
 
   ngOnInit() {
@@ -35,19 +39,23 @@ export class FbLoginPage implements OnInit {
     //this.fbAuthice.fbLogin(this.fbUser.email, this.fbUser.password);
     // this.email = "ss@ss.com";
     // this.password = "ss1234";
-    this.fbAuth.fbLogin(this.email, this.password).then(res => {
-      if (res == true) {
-        this.router.navigate(["tmdb-login"]);
-        this.userDbServ.connectToDb(this.email);
-        console.log("to tmdblogin");
-        this.fbAuth.fbEmail = this.email;
-        this.fbAuth.fbPassword = this.password;
+    const load = this.menu.presentLoading().then(res => {
+      this.fbAuth.fbLogin(this.email, this.password).then(res => {
+        if (res == true) {
+          this.router.navigate(["tmdb-login"]);
+          this.userDbServ.connectToDb(this.email);
+          console.log("to tmdblogin");
+          this.fbAuth.fbEmail = this.email;
+          this.fbAuth.fbPassword = this.password;
 
-        //this.router.navigate(["members", "dashboard"]);
+          //this.router.navigate(["members", "dashboard"]);
 
-        //on successful login set session email to the user email
-        this.sessionServ.email = this.email;
-      }
+          //on successful login set session email to the user email
+          this.sessionServ.email = this.email;
+        }
+      });
+
+      load.dismiss();
     });
   }
 
