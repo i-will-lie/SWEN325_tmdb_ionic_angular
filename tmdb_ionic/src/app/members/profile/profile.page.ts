@@ -1,9 +1,14 @@
+import { MenusService } from "./../../services/menus.service";
 import { FavouritesService } from "./../../services/favourites.service";
 import { AuthenticationService } from "./../../services/authentication.service";
 import { FriendsService } from "./../../services/friends.service";
 import { Component, OnInit } from "@angular/core";
 import { UserDatabaseService } from "./../../services/user-database.service";
-import { AlertController } from "@ionic/angular";
+import {
+  AlertController,
+  ActionSheetController,
+  NavController
+} from "@ionic/angular";
 import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
@@ -20,7 +25,10 @@ export class ProfilePage implements OnInit {
     private authServ: AuthenticationService,
     public friendServ: FriendsService,
     private router: Router,
-    private favouriteServ: FavouritesService
+    private favouriteServ: FavouritesService,
+    public menu: MenusService,
+    private asCtrl: ActionSheetController,
+    private navCtrl: NavController
   ) {}
 
   dbUserInfo;
@@ -31,31 +39,37 @@ export class ProfilePage implements OnInit {
   tmdbFavId;
   friends;
 
-  profile;
-  ngOnInit() {
-    let email = this.activatedRoute.snapshot.paramMap.get("email");
+  message;
 
-    this.friendsServ.getProfile(email).subscribe(result => {
-      this.profile = result;
-      console.log("new deatil", result);
-    });
+  profile;
+  async ngOnInit() {
+    let email = await this.activatedRoute.snapshot.paramMap.get("email");
+    console.log("EMFDSF", email);
+    // this.friendsServ.getProfile(email).subscribe(result => {
+    //   this.profile = result;
+    //   console.log("new deatil", result);
+    // });
 
     this.favouriteServ.setCurrentUser(email);
-    // this.dbUserInfo = this.friendsServ.getProfile(email).subscribe(res => {
-    //   this.userName = res["username"];
-    //   this.email = res["fbUser"]["email"];
-    //   this.tmdbUser = res["tmdbUser"]["username"];
-    //   this.tmdbAccId = res["tmdbUser"]["accountID"];
-    //   this.tmdbFavId = res["favourites"];
-    //   console.log(
-    //     "email",
-    //     this.email,
-    //     this.userName,
-    //     res["favourites"],
-    //     this.tmdbFavId
-    //   );
-    //   console.log(this.userDbService.dbInfo);
-    //});
+    this.dbUserInfo = await this.friendsServ
+      .getProfile(email)
+      .subscribe(res => {
+        console.log("pppppppppppp,", res);
+        this.userName = res["username"];
+        this.email = res["fbUser"]["email"];
+        this.tmdbUser = res["tmdbUser"]["username"];
+        this.tmdbAccId = res["tmdbUser"]["accountID"];
+        this.tmdbFavId = res["favourites"];
+        this.message = res["message"];
+        console.log(
+          "email",
+          this.email,
+          this.userName,
+          res["favourites"],
+          this.tmdbFavId
+        );
+        console.log(this.userDbService.dbInfo);
+      });
 
     // console.log("un", dbUserInfo["username"]);
     // this.userName = dbUserInfo["username"];
@@ -65,6 +79,7 @@ export class ProfilePage implements OnInit {
     // console.log("email", this.email);
     // console.log(this.userDbService.dbInfo);
   }
+
   checkdb() {
     console.log("click pro button");
     // console.log(
@@ -77,19 +92,25 @@ export class ProfilePage implements OnInit {
     return this.userDbService.getDbUser();
   }
 
-  editName() {
-    console.log("edit pressed");
-    {
-      this.showEditForm();
-    }
-    //
-  }
+  // editText() {
+  //   console.log("edit pressed");
+  //   {
+  //     if (this.editingText) {
+  //       this.editingText = false;
+  //     }
+  //     {
+  //       this.editingText = true;
+  //     }
+  //   }
+
+  //   //
+  // }
   async showEditForm() {
     const alert = await this.alert.create({
-      header: "Prompt!",
+      header: "Edit your message",
       inputs: [
         {
-          name: "name",
+          name: "message",
           type: "text",
           placeholder: this.userName
         }
@@ -105,10 +126,11 @@ export class ProfilePage implements OnInit {
         },
         {
           text: "Ok",
-          handler: newName => {
-            console.log("nw", newName.name);
-            this.userDbService.updateUsername(this.email, newName.name);
-            console.log("Confirm Ok");
+          handler: data => {
+            console.log("nw", data);
+            this.userDbService
+              .updateMessage(this.email, data.message)
+              .then(() => this.ngOnInit());
           }
         }
       ]
@@ -146,5 +168,51 @@ export class ProfilePage implements OnInit {
         fav
       ])
       .then(res => console.log(res));
+  }
+
+  async showActions() {
+    const actionSheet = await this.asCtrl.create({
+      header: "Manage your friend",
+      buttons: [
+        {
+          text: "View Favourites",
+          icon: "heart",
+          handler: () => {
+            this.gotoFavourites();
+          }
+        },
+        {
+          text: "Add Friend",
+          icon: "add",
+          handler: () => {
+            this.addFriend(
+              this.email,
+              this.userName,
+              this.tmdbAccId,
+              this.tmdbFavId
+            );
+            this.menu.presentToast("Added friend " + this.email);
+          }
+        },
+        {
+          text: "Remove Friend",
+          icon: "remove",
+          handler: () => {
+            this.removeFriend(this.email);
+            this.menu.presentToast("Removed friend " + this.email);
+          }
+        },
+        {},
+        {
+          text: "Cancel",
+          icon: "close"
+        }
+      ]
+    });
+
+    await actionSheet.present();
+  }
+  backToDetails() {
+    this.navCtrl.pop();
   }
 }

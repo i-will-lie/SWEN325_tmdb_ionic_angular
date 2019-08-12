@@ -6,4 +6,5 @@ export interface User {
   sessionID: number;
   friends: [];
   favourites: [];
+  message: string;
 }

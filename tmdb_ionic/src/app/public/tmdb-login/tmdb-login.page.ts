@@ -60,11 +60,11 @@ export class TmdbLoginPage implements OnInit {
   }
 
   async tmdbLogin() {
-    this.menu.presentLoading().then(async res => {
-      await this.tmdbAuthServ.setAuthSub();
+    //this.menu.presentLoading().then(async res => {
+    await this.tmdbAuthServ.setAuthSub();
 
-      this.menu.loading.dismiss();
-    });
+    //this.menu.loading.dismiss();
+    //});
     console.log("setting auth sub");
 
     var tmdbSessionId;
@@ -129,7 +129,7 @@ export class TmdbLoginPage implements OnInit {
       this.sessionServ.email,
       this.sessionServ.sessionID
     );
-    this.menu.loading.dismiss();
+    //this.menu.loading.dismiss();
     this.authComplete();
     //console.log("lo", this.userDbServ.getIDFromEmail(this.sessionServ.email));
     //this.tmdbAuthServ.addUser(this.tmdbUsername);
@@ -144,7 +144,7 @@ export class TmdbLoginPage implements OnInit {
     this.favouriteServ.setRatedMovies();
     this.favouriteServ.setRatedTV();
     //this.searchServ.getPopular();
-    this.menu.loading.dismiss();
+    //this.menu.loading.dismiss();
     this.router.navigate(["members", "dashboard"]);
   }
 }

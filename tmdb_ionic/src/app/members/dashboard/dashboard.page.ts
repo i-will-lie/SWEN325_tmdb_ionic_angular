@@ -96,7 +96,6 @@ export class DashboardPage implements OnInit {
     return this.sessionServ.email;
   }
   getCurrentAccId() {
-    console.log("accIDDDDDDDDDDDDDDDDDDDDDDDD", this.sessionServ.accountID);
     return this.sessionServ.accountID;
   }
   getCurrentUsername() {
@@ -105,5 +104,9 @@ export class DashboardPage implements OnInit {
 
   getCurrentListID() {
     return this.userDbServ.favouriteListID;
+  }
+
+  backToDetails() {
+    this.navCtrl.pop();
   }
 }

@@ -89,4 +89,7 @@ export class FavouritesPage implements OnInit {
   isOwner() {
     return this.sessionServ.accountID == this.favouriteServ.tmdbAccId;
   }
+  backToDetails() {
+    this.navCtrl.pop();
+  }
 }

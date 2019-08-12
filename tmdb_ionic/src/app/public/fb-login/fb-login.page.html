@@ -1,26 +1,37 @@
-<ion-spinner name="bubbles"></ion-spinner>
-<ion-header>
-  <ion-toolbar>
-    <ion-title>loogin</ion-title>
-  </ion-toolbar>
-</ion-header>
-f
-<ion-content padding>
-  <ion-item>
-    <ion-input type="email" [(ngModel)]="email">Login: </ion-input>
-  </ion-item>
+<p *ngIf="submitAttempt" style="color: #ea6153;">
+  Please fill out all details accurately.
+</p>
 
-  <ion-item>
-    <ion-input type="password" [(ngModel)]="password">Password: </ion-input>
-  </ion-item>
-
-  <ion-button (click)="fbLogin()" expand="block">Login</ion-button>
-  <ion-button
-    expand="block"
-    color="secondary"
-    routerLink="/fb-register"
-    routerDirection="forward"
-    >Register</ion-button
+<ion-list lines="none">
+  <form [formGroup]="loginForm">
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input formControlName="email" type="text"></ion-input>
+    </ion-item>
+    <ion-item
+      *ngIf="
+        !loginForm.controls.email.valid &&
+        (loginForm.controls.email.dirty || submitAttempt)
+      "
+    >
+      <p>Please enter a email at most of 50 characters long.</p>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Password</ion-label>
+      <ion-input formControlName="password" type="password"></ion-input>
+    </ion-item>
+    <ion-item
+      *ngIf="
+        !loginForm.controls.password.valid &&
+        (loginForm.controls.password.dirty || submitAttempt)
+      "
+    >
+      <p>Please enter password between 8 and 20 wiht at least on number.</p>
+    </ion-item>
+    <ion-item expand="full" color="primary" (click)="fbLogin()">Login</ion-item>
+  </form>
+  <ion-item expand="block" color="secondary" (click)="fbRegister()"
+    >Register</ion-item
   >
-  <ion-button (click)="setInputEmail()">Forgot Password</ion-button>
-</ion-content>
+  <ion-item (click)="requestPasswordReset()">Forgot Password</ion-item>
+</ion-list>

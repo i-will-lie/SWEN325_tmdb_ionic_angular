@@ -82,11 +82,11 @@ export class UserDatabaseService {
     //   .update({ tmdbUser: -1 });
   }
 
-  tmdbLoggedOn(fbUserEmail) {
-    console.log("getting");
-    console.log(this.dbUser);
-    //return res;
-  }
+  // tmdbLoggedOn(fbUserEmail) {
+  //   console.log("getting");
+  //   console.log(this.dbUser);
+  //   //return res;
+  // }
 
   async connectToDb(fbUserEmail) {
     console.log("subscribing");
@@ -97,14 +97,15 @@ export class UserDatabaseService {
     // .subscribe(res => {
     //   this.dbInfo = res;
     // });
-    await console.log("db ___Uder", this.dbUser);
+    //await console.log("db ___Uder", this.dbUser);
   }
 
-  updateUsername(fbUserEmail, newName) {
-    this.firestore
+  async updateMessage(fbUserEmail, newMessage) {
+    console.log(newMessage);
+    return await this.firestore
       .collection("UserInfo")
       .doc(fbUserEmail)
-      .update({ username: newName });
+      .update({ message: newMessage });
   }
   getDbInfo() {
     return this.dbInfo;

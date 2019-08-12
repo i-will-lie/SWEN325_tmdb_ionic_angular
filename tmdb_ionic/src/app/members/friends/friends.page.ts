@@ -5,6 +5,7 @@ import { FriendsService } from "./../../services/friends.service";
 import { Component, OnInit } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { AngularFireDatabase, AngularFireList } from "angularfire2/database";
+import { MenusService } from "../../services/menus.service";
 
 @Component({
   selector: "app-friends",
@@ -19,7 +20,8 @@ export class FriendsPage implements OnInit {
   constructor(
     private friendServ: FriendsService,
     private afStore: AngularFirestore,
-    private sessionServ: SessionService
+    private sessionServ: SessionService,
+    public menu: MenusService
   ) {}
 
   ngOnInit() {
@@ -66,5 +68,8 @@ export class FriendsPage implements OnInit {
       return friend;
     }
     return [];
+  }
+  backToDetails() {
+    this.navCtrl.pop();
   }
 }

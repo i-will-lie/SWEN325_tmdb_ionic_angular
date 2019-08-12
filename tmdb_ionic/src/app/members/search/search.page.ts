@@ -3,6 +3,7 @@ import { Component, OnInit, inject } from "@angular/core";
 import { Observable } from "rxjs";
 
 import { Router } from "@angular/router";
+import { NavController } from "@ionic/angular";
 
 export enum FavouriteType {
   movie = "movie",
@@ -19,7 +20,11 @@ export class SearchPage implements OnInit {
   searchTerm: string = "";
   type: SearchType = SearchType.movie;
   selecteditem = null;
-  constructor(private searchService: SearchService, private router: Router) {}
+  constructor(
+    private searchService: SearchService,
+    private router: Router,
+    private navCtrl: NavController
+  ) {}
 
   ngOnInit() {}
 
@@ -31,5 +36,9 @@ export class SearchPage implements OnInit {
 
   getImage(path: string) {
     //this.searchService.getImage(path);
+  }
+
+  backToDetails() {
+    this.navCtrl.pop();
   }
 }

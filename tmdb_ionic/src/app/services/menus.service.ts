@@ -82,8 +82,7 @@ export class MenusService {
           { text: "" },
           {
             text: "Cancel",
-            icon: "close",
-            role: "cancel"
+            icon: "close"
           },
           { text: "" },
           {
@@ -115,10 +114,14 @@ export class MenusService {
       showCloseButton: true,
       translucent: true
     });
-    this.toast.present();
+    await this.toast.present();
   }
 
-  presentAlert() {
-    this.alert = this.alertCtrl.create({});
+  async presentAlert(message) {
+    this.alert = this.alertCtrl.create({
+      message: message,
+      buttons: ["OK"]
+    });
+    await this.alert.present();
   }
 }
