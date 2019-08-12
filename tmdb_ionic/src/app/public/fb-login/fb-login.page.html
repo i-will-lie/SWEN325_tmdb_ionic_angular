@@ -14,7 +14,7 @@
         (loginForm.controls.email.dirty || submitAttempt)
       "
     >
-      <p>Please enter a email at most of 50 characters long.</p>
+      <p>Please enter a valid email at most of 30 characters long.</p>
     </ion-item>
     <ion-item>
       <ion-label position="floating">Password</ion-label>
@@ -26,7 +26,10 @@
         (loginForm.controls.password.dirty || submitAttempt)
       "
     >
-      <p>Please enter password between 8 and 20 wiht at least on number.</p>
+      <p>
+        Please enter password between 6 and 20 charaacters with at least a
+        number.
+      </p>
     </ion-item>
     <ion-item expand="full" color="primary" (click)="fbLogin()">Login</ion-item>
   </form>

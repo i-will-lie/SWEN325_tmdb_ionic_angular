@@ -5,7 +5,7 @@ import { UserDatabaseService } from "./../../services/user-database.service";
 import { AuthenticationService } from "./../../services/authentication.service";
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
-import { ActionSheetController } from "@ionic/angular";
+import { ActionSheetController, NavController } from "@ionic/angular";
 import { SearchService } from "../../search.service";
 
 @Component({
@@ -23,7 +23,8 @@ export class DashboardPage implements OnInit {
     private sessionServ: SessionService,
     private favouriteServ: FavouritesService,
     public asCtrl: ActionSheetController,
-    private searchServ: SearchService
+    private searchServ: SearchService,
+    private navCtrl: NavController
   ) {}
 
   randomItem;
@@ -106,7 +107,7 @@ export class DashboardPage implements OnInit {
     return this.userDbServ.favouriteListID;
   }
 
-  backToDetails() {
+  goBack() {
     this.navCtrl.pop();
   }
 }

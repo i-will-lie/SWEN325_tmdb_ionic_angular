@@ -47,8 +47,12 @@
   <ion-card>
     <ion-card-content class="overview">
       {{ itemDetails?.overview }}
-    </ion-card-content>
-  </ion-card>
-  <ion-button (click)="menu.showMenu()">MENU</ion-button>
-  <ion-button (click)="showActions()">MORE ACITIONS</ion-button>
+    </ion-card-content> </ion-card
+  ><ion-row>
+    <ion-col><ion-item (click)="menu.showMenu()">MENU</ion-item></ion-col>
+    <ion-col>
+      <ion-item (click)="showActions()">MORE ACTIONS</ion-item></ion-col
+    >
+    <ion-col> <ion-item (click)="goBack()">BACK</ion-item></ion-col></ion-row
+  >
 </ion-footer>

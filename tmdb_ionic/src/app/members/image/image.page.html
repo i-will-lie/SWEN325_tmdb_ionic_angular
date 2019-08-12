@@ -1,15 +1,23 @@
 <ion-content
   ><ion-img
-    (click)="backToDetails()"
+    (click)="goBack()"
     [src]="'https://image.tmdb.org/t/p/original' + posterPath"
   >
   </ion-img>
 </ion-content>
 <ion-footer
-  ><ion-row
-    ><ion-item class="mainMenu" (click)="menu.showMenu()">MENU</ion-item
-    ><ion-item class="actionMenu" (click)="backToDetails()"
-      >BACK</ion-item
-    ></ion-row
-  >
+  ><ion-grid>
+    <ion-row>
+      <ion-col
+        ><ion-item class="mainMenu" (click)="menu.showMenu()"
+          >MENU</ion-item
+        ></ion-col
+      >
+      <ion-col
+        ><ion-item class="backButton" (click)="goBack()"
+          >BACK</ion-item
+        ></ion-col
+      >
+    </ion-row>
+  </ion-grid>
 </ion-footer>

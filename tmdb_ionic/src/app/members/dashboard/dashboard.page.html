@@ -19,7 +19,7 @@
     <ion-row>
       <ion-col
         ><ion-item class="button" (click)="navigate('search')"
-          >Search</ion-item
+          >SEARCH</ion-item
         ></ion-col
       >
       <ion-col
@@ -33,7 +33,7 @@
               getCurrentListID()
             )
           "
-          >Favourites</ion-item
+          >FAVOURITES</ion-item
         ></ion-col
       >
     </ion-row>
@@ -42,17 +42,20 @@
         ><ion-item
           class="button"
           (click)="navigateToProfile('profile', getCurrentUserEmail())"
-          >Profile</ion-item
+          >PROFILE</ion-item
         ></ion-col
       >
       <ion-col
         ><ion-item class="button" (click)="navigate('friends')"
-          >Friends</ion-item
+          >FRIENDS</ion-item
         ></ion-col
       ></ion-row
     >
     <ion-row>
-      <ion-item class="button" (click)="logout()">Logout</ion-item></ion-row
-    >
+      <ion-col
+        ><ion-item class="button" (click)="logout()">logout</ion-item></ion-col
+      >
+      <ion-col> <ion-item (click)="goBack()"> back</ion-item></ion-col>
+    </ion-row>
   </ion-grid>
 </ion-footer>

@@ -1,14 +1,11 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ currentUsername }} Faaaavourites</ion-title>
-
-    <ion-back-button></ion-back-button>
+    <ion-title>{{ currentUsername }}'s Favourites</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
-  <ion-list
-    >Results
+  <ion-list>
     <ion-item *ngFor="let item of result">
       <ion-item
         button
@@ -20,8 +17,7 @@
           >
           </ion-img
         ></ion-thumbnail>
-        <ion-list
-          >ONE
+        <ion-list>
           <ion-label>{{ item?.original_title }}</ion-label>
           <ion-label>{{ item?.release_date }}</ion-label>
           <ion-label>{{ item?.vote_average }}</ion-label>
@@ -35,9 +31,20 @@
       ></ion-icon>
     </ion-item>
   </ion-list>
-
-  <ion-button (click)="getFavourites()">click</ion-button> </ion-content
-><ion-footer>
-  <ion-button (click)="menu.showMenu()">MENU</ion-button>
-  <ion-button (click)="showActions()">MORE ACITIONS</ion-button>
+</ion-content>
+<ion-footer
+  ><ion-grid>
+    <ion-row>
+      <ion-col
+        ><ion-item class="mainMenu" (click)="menu.showMenu()"
+          >MENU</ion-item
+        ></ion-col
+      >
+      <ion-col
+        ><ion-item class="backButton" (click)="goBack()"
+          >BACK</ion-item
+        ></ion-col
+      >
+    </ion-row>
+  </ion-grid>
 </ion-footer>

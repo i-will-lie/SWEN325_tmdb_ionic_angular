@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>friends</ion-title>
+    <ion-title>{{ friendResult?.fbUser.email }} Friends</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -20,19 +20,17 @@
   <ion-item *ngIf="friendResult == null">
     No User Found
   </ion-item>
-
-  <ion-item
-    >Your Friends
-    <ion-list>
-      <ion-item
-        button
-        *ngFor="let friend of getCurrentFriends()"
-        [routerLink]="['/', 'members', 'profile', friend.email]"
-      >
-        <ion-label>{{ friend?.email }}</ion-label>
-      </ion-item>
-    </ion-list>
-  </ion-item>
+  <ion-item-divider></ion-item-divider>
+  <ion-header>Your Friends</ion-header>
+  <ion-list>
+    <ion-item
+      button
+      *ngFor="let friend of getCurrentFriends()"
+      [routerLink]="['/', 'members', 'profile', friend.email]"
+    >
+      <ion-label>{{ friend?.username }}</ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>
 <ion-footer>
   <ion-item (click)="menu.showMenu()">MENU</ion-item>

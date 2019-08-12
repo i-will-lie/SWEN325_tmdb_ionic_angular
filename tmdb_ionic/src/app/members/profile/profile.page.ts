@@ -212,7 +212,7 @@ export class ProfilePage implements OnInit {
 
     await actionSheet.present();
   }
-  backToDetails() {
+  goBack() {
     this.navCtrl.pop();
   }
 }

@@ -1,13 +1,12 @@
 import { FormBuilder, Validators } from "@angular/forms";
 import { MenusService } from "./../../services/menus.service";
-import { MenuController } from "@ionic/angular";
+import { MenuController, LoadingController } from "@ionic/angular";
 import { UserDatabaseService } from "./../../services/user-database.service";
 import { SessionService } from "./../../services/session.service";
 import { Router } from "@angular/router";
 import { FbUser } from "./../../models/fbUser";
 import { AuthenticationService } from "./../../services/authentication.service";
 import { Component, OnInit } from "@angular/core";
-
 @Component({
   selector: "app-fb-login",
   templateUrl: "./fb-login.page.html",
@@ -18,6 +17,8 @@ export class FbLoginPage implements OnInit {
   email: string;
   password: string;
   loginForm;
+  loading;
+
   submitAttempt: boolean = false;
   constructor(
     private fbAuth: AuthenticationService,
@@ -25,7 +26,8 @@ export class FbLoginPage implements OnInit {
     private sessionServ: SessionService,
     private userDbServ: UserDatabaseService,
     private menu: MenusService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private loadCtrl: LoadingController
   ) {}
 
   ngOnInit() {
@@ -53,16 +55,19 @@ export class FbLoginPage implements OnInit {
     });
   }
 
-  fbLogin() {
+  async fbLogin() {
     //console.log(this.email, this.password);
 
     //this.fbAuthice.fbLogin(this.fbUser.email, this.fbUser.password);
     // this.email = "ss@ss.com";
     // this.password = "ss1234";
     //const load = this.menu.presentLoading().then(res => {
+    this.loading = await this.menu.createLoading();
+    await this.loading.present();
     this.fbAuth
       .fbLogin(this.loginForm.value.email, this.loginForm.value.password)
       .then(res => {
+        this.loading.dismiss();
         if (res == true) {
           this.router.navigate(["tmdb-login"]);
           this.userDbServ.connectToDb(this.loginForm.value.email);

@@ -1,3 +1,4 @@
+import { LoadingController } from "@ionic/angular";
 import { MenusService } from "./../../services/menus.service";
 import { SearchService } from "./../../search.service";
 import { FavouritesService } from "./../../services/favourites.service";
@@ -16,10 +17,16 @@ import { FriendsService } from "../../services/friends.service";
   templateUrl: "./tmdb-login.page.html",
   styleUrls: ["./tmdb-login.page.scss"]
 })
+
+/**
+ * Facilatats tthe authentication with TMDB.
+ */
 export class TmdbLoginPage implements OnInit {
-  tmdbUsername: string;
-  tmdbPassword: string;
-  loginSub;
+  tmdbUsername: string; //tmdb username provided by user
+  tmdbPassword: string; //tmdb password provided by user
+
+  loginSub; //subscription to fb database to crossrefernce credentials
+  load; //agent for load controller
   constructor(
     private authService: AuthenticationService,
     private router: Router,
@@ -28,13 +35,10 @@ export class TmdbLoginPage implements OnInit {
     private tmdbAuthServ: TmdbAuthenticationService,
     private friendServ: FriendsService,
     private favouriteServ: FavouritesService,
-    private searchServ: SearchService,
     private menu: MenusService
   ) {}
 
   async ngOnInit() {
-    this.tmdbUsername = "";
-    this.tmdbPassword = "";
     this.checkIfHaveDetails();
   }
   /**
@@ -42,73 +46,75 @@ export class TmdbLoginPage implements OnInit {
    * Attempt to automatically login.
    */
   async checkIfHaveDetails() {
-    //this.menu.presentLoading().then(load => {
-    this.menu.presentToast("Checking Existing Details");
+    this.load = await this.menu.createLoading();
+    await this.load.present();
+
+    this.menu.presentToast("Checking For Existing Credentials");
     //subscribe to the firebase database to check if there are existing credentials.
     this.loginSub = this.userDbServ.dbUser.subscribe(res => {
       //if credentials exist login using credentials from firebase.
-      // load.dismiss();
+      this.load.dismiss();
       if (res["tmdbUser"] != null) {
         this.menu.presentToast("Logging in with Existing Details");
         (this.tmdbUsername = res["tmdbUser"]["username"]),
           (this.tmdbPassword = res["tmdbUser"]["password"]);
 
         this.tmdbLogin();
+      } else {
+        this.menu.presentToast("Please Login with TMDB Account");
       }
     });
-    //});
   }
-
+  /**
+   * Attempt to authenticate with TMDB API by handshaking with tokens.
+   */
   async tmdbLogin() {
+    await this.load.present();
     //this.menu.presentLoading().then(async res => {
     await this.tmdbAuthServ.setAuthSub();
 
-    //this.menu.loading.dismiss();
-    //});
-    console.log("setting auth sub");
+    var tmdbSessionId; //to hold the session ID
 
-    var tmdbSessionId;
-
+    //Request a authentication token
     const tokenReqRes = await this.tmdbAuthServ.tmdbRequestToken();
 
+    //request token and continued if received
     if (tokenReqRes["request_token"]) {
-      // console.log("token", tokenReqRes["request_token"]);
       var token = tokenReqRes["request_token"];
     } else {
-      // console.log("ERROR Token");
+      this.menu.presentAlert("Failured to generate Login Token");
+      this.load.dismiss();
       return;
     }
-    // console.log("www", this.tmdbUsername, this.tmdbPassword);
+
+    //login with token to validate it.
     const loginRes = await this.tmdbAuthServ.tmdbAuthenticateLoginWithToken(
       this.tmdbUsername,
       this.tmdbPassword,
       token
     );
-    // console.log("login done");
 
-    if (loginRes["success"]) {
-      console.log("loginRes", loginRes["success"]);
-    } else {
+    if (!loginRes["success"]) {
       console.log("ERROR Login");
+      this.menu.presentAlert("Incorrect Login Details");
+      this.load.dismiss();
       return;
     }
 
+    //authenticate the token to get session ID
     const sessionRes = await this.tmdbAuthServ.tmdbRequestSession(token);
     if (sessionRes["success"]) {
-      // console.log("loginRes", sessionRes["session_id"]);
       tmdbSessionId = sessionRes["session_id"];
     } else {
-      // console.log("ERROR session");
+      this.menu.presentAlert("Unable to create session");
+      this.load.dismiss();
       return;
     }
 
-    // /*const loginRes = await */ const res = await this.authService.tmdbLogin(
-    //   this.username,
-    //   this.password
-    // );
-    console.log("END");
+    //set authenticated flag to true for auth guard
     this.authService.tmdbAuthenticated = true;
 
+    //get the account id of current user
     const tmdbAccID = await this.tmdbAuthServ.tmdbGetAccountID(tmdbSessionId);
     console.log("id", tmdbAccID["id"]);
     console.log(
@@ -118,33 +124,35 @@ export class TmdbLoginPage implements OnInit {
       this.tmdbPassword
     );
 
+    //collect information of current user to later use
     this.tmdbAuthServ.tmdbAddUser(
       this.tmdbUsername,
       this.tmdbPassword,
       tmdbAccID["id"]
     );
-    console.log("adding tmdbsession");
+
+    //collection information regardarding the session
+    //into a service where they can be shared
     this.sessionServ.sessionID = tmdbSessionId;
     this.userDbServ.addTmdbSession(
       this.sessionServ.email,
       this.sessionServ.sessionID
     );
-    //this.menu.loading.dismiss();
+
     this.authComplete();
-    //console.log("lo", this.userDbServ.getIDFromEmail(this.sessionServ.email));
-    //this.tmdbAuthServ.addUser(this.tmdbUsername);
-    //this.tmdbAuthServ.addAccID(tmdbAccID["id"]);
   }
 
+  /**
+   * Initalise/end various services adn subscription
+   * so they will be ready when needed.
+   */
   authComplete() {
-    console.log("todash", this.tmdbUsername, this.tmdbPassword);
     this.loginSub.unsubscribe();
     this.friendServ.initFriends();
     this.userDbServ.getListId();
     this.favouriteServ.setRatedMovies();
     this.favouriteServ.setRatedTV();
-    //this.searchServ.getPopular();
-    //this.menu.loading.dismiss();
+    this.load.dismiss();
     this.router.navigate(["members", "dashboard"]);
   }
 }

@@ -235,7 +235,7 @@ export class AuthenticationService {
   getCurrentUser() {
     return this.currentUser;
   }
-  async fbLogut() {
+  async logout() {
     //const res = await this.userDbService.tmdbLoggedOn(this.fbUser.email);
 
     this.userDbService.dbLogout(this.fbUser.email);
@@ -275,6 +275,4 @@ export class AuthenticationService {
       })
       .catch(error => this.presentAlert(error));
   }
-
-  logout() {}
 }

@@ -285,4 +285,7 @@ export class DetailPage implements OnInit {
   //     )
   //     .subscribe(res => console.log(res));
   // }
+  goBack() {
+    this.navCtrl.pop();
+  }
 }

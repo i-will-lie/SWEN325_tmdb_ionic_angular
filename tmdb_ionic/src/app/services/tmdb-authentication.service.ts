@@ -1,3 +1,4 @@
+import { MenusService } from "./menus.service";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { HttpClient } from "@angular/common/http";
 import { SessionService } from "./session.service";
@@ -8,16 +9,22 @@ import { UserDatabaseService } from "./user-database.service";
 @Injectable({
   providedIn: "root"
 })
+/**
+ * Provide services for TmdbAuthentication to login.
+ */
 export class TmdbAuthenticationService {
-  tmdbAuthSub;
-  tmdbSessID = -1;
+  tmdbAuthSub; //holds subscription to the fb database for crossreferencing
+  tmdbSessID = -1; // default value to signify no current seesion ID
   constructor(
     private sessionServ: SessionService,
     private http: HttpClient,
     private userDbServ: UserDatabaseService,
-    private afStore: AngularFirestore
+    private menu: MenusService
   ) {}
 
+  /**
+   * Request token from TMDB.
+   */
   async tmdbRequestToken() {
     try {
       return await this.http
@@ -27,20 +34,26 @@ export class TmdbAuthenticationService {
           }`
         )
         .toPromise();
-    } catch (e) {}
+    } catch (e) {
+      this.menu.presentAlert(e);
+    }
     return null;
   }
 
+  /**
+   * Authenticate otken with a user.
+   *
+   * @param username :string user username
+   * @param password :string user password
+   * @param token :string toeknn to be authenticated.
+   */
   async tmdbAuthenticateLoginWithToken(
     username: string,
     password: string,
     token: string
   ) {
-    console.log(username, password);
-
+    //HTTP request data
     const loginData = {
-      // username: "joewill", //username,
-      // password: "abc123456", //password,
       username: username,
       password: password,
       request_token: token
@@ -53,10 +66,17 @@ export class TmdbAuthenticationService {
         }`,
         loginData
       )
-      .toPromise();
+      .toPromise()
+      .catch(error => {
+        this.menu.presentAlert(error);
+      });
     return res;
-    console.log("login res", res);
   }
+  /**
+   * Use use Authenticated token to generate a session.
+   *
+   * @param token :string authenticated token to be used for get session ID.
+   */
   async tmdbRequestSession(token: string) {
     const session = await this.http
       .post(
@@ -67,14 +87,18 @@ export class TmdbAuthenticationService {
           request_token: token
         }
       )
-      .toPromise();
-    // if (session["success"]) {
-    //   this.sessionServ.sessionID = session["session_id"];
-    //   //console.log("sid", this.sessionServ.sessionID);
-    // }
+      .toPromise()
+      .catch(error => {
+        this.menu.presentAlert(error);
+      });
     return session;
   }
 
+  /**
+   * Retrieve user
+   *
+   * @param sessionID
+   */
   async tmdbGetAccountID(sessionID: string) {
     const tmdbAccID = await this.http
       .get(
@@ -86,14 +110,15 @@ export class TmdbAuthenticationService {
     return tmdbAccID;
   }
 
+  /**
+   * Subscribe to the sessionID stored and the database.
+   * -1 indicates it's there is no current session.
+   */
   setAuthSub() {
     this.tmdbAuthSub = this.userDbServ.dbUser.subscribe(res => {
-      console.log("got db sub");
       if (res["tmdbUser"]["sessionID"]) {
-        console.log("pass");
         this.tmdbSessID = res["tmdbUser"]["sessionID"];
       } else {
-        console.log("fail");
         this.tmdbSessID = -1;
       }
     });

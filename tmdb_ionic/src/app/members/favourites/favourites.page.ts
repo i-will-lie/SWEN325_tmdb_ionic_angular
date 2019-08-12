@@ -7,6 +7,7 @@ import { FavouritesService } from "./../../services/favourites.service";
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Observable } from "rxjs";
+import { NavController } from "@ionic/angular";
 
 export enum FavouriteType {
   movie = "movies",
@@ -33,7 +34,8 @@ export class FavouritesPage implements OnInit {
     private sessionServ: SessionService,
     private activatedRoute: ActivatedRoute,
     private friendServ: FriendsService,
-    public menu: MenusService
+    public menu: MenusService,
+    private navCtrl: NavController
   ) {}
 
   async ngOnInit() {
@@ -89,7 +91,7 @@ export class FavouritesPage implements OnInit {
   isOwner() {
     return this.sessionServ.accountID == this.favouriteServ.tmdbAccId;
   }
-  backToDetails() {
+  goBack() {
     this.navCtrl.pop();
   }
 }

@@ -1,3 +1,4 @@
+import { NavController } from "@ionic/angular";
 import { UserDatabaseService } from "./../../services/user-database.service";
 import { Friend } from "./../../models/friend";
 import { SessionService } from "./../../services/session.service";
@@ -21,7 +22,8 @@ export class FriendsPage implements OnInit {
     private friendServ: FriendsService,
     private afStore: AngularFirestore,
     private sessionServ: SessionService,
-    public menu: MenusService
+    public menu: MenusService,
+    private navCtrl: NavController
   ) {}
 
   ngOnInit() {
@@ -57,7 +59,12 @@ export class FriendsPage implements OnInit {
   }
   addFriend(email, username, accountID, favouriteID) {
     //console.log("add friend", email, username, accountID);
-    this.friendServ.addFriend(email, username, accountID, favouriteID);
+    if (email == this.sessionServ.email) {
+      this.menu.presentAlert("You Can't Friend Yourself");
+    } else {
+      this.friendServ.addFriend(email, username, accountID, favouriteID);
+      this.menu.presentToast("Friend added: " + username);
+    }
   }
 
   getCurrentFriends() {
@@ -69,7 +76,7 @@ export class FriendsPage implements OnInit {
     }
     return [];
   }
-  backToDetails() {
+  goBack() {
     this.navCtrl.pop();
   }
 }

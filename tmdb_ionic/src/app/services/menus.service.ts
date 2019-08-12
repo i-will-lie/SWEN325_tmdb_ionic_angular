@@ -13,10 +13,12 @@ import { AuthenticationService } from "./authentication.service";
 @Injectable({
   providedIn: "root"
 })
+/**
+ * MenusService provides notification related services.
+ */
 export class MenusService {
-  loading;
-  toast;
-  alert;
+  toast; //agent toast controll
+  alert; //agent for alert controll
 
   constructor(
     private router: Router,
@@ -99,17 +101,25 @@ export class MenusService {
       });
   }
 
-  async presentLoading() {
-    const loading = await this.loadCtrl.create({
-      message: "Please Wait"
+  /**
+   * Create a LoadController with a 60 sec timeout duration.
+   */
+  async createLoading() {
+    return await this.loadCtrl.create({
+      message: "Please Wait",
+      duration: 60000,
+      spinner: "lines-small"
     });
-    return this.loading.present();
   }
-
-  async presentToast(message) {
+  /**
+   * Present an toast using the provided message.
+   * Used for notices that can be ignored.
+   * @param message :string message to display.
+   */
+  async presentToast(message: string) {
     this.toast = await this.toastCtrl.create({
       message: message,
-      duration: 2000,
+      duration: 2500,
       position: "top",
       showCloseButton: true,
       translucent: true
@@ -117,7 +127,13 @@ export class MenusService {
     await this.toast.present();
   }
 
-  async presentAlert(message) {
+  /**
+   * Present an alert using the provided message.
+   * Used for noticed that requies attention.
+   *
+   * @param message :string message to display.
+   */
+  async presentAlert(message: string) {
     this.alert = this.alertCtrl.create({
       message: message,
       buttons: ["OK"]

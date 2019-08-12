@@ -38,7 +38,7 @@ export class SearchPage implements OnInit {
     //this.searchService.getImage(path);
   }
 
-  backToDetails() {
+  goBack() {
     this.navCtrl.pop();
   }
 }

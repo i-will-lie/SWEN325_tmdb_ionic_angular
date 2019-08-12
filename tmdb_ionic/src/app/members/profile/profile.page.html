@@ -20,15 +20,9 @@
       </ion-item>
     </ion-card-content>
   </ion-card>
-  <ion-card><ion-textarea> </ion-textarea> </ion-card>
-
   <ion-item *ngIf="email == getCurrentEmail()" (click)="showEditForm()"
     >EDIT Message > </ion-item
   ><ion-card>{{ message }}</ion-card>
-
-  <ion-button (click)="gotoFavourites()">
-    Favourites
-  </ion-button>
 </ion-content>
 <ion-footer>
   <ion-grid>
@@ -36,7 +30,7 @@
       ><ion-col><ion-item (click)="menu.showMenu()">MENU</ion-item></ion-col>
       <ion-col
         ><ion-item (click)="showActions()">MORE ACTIONS</ion-item></ion-col
-      ></ion-row
+      ><ion-col (click)="goBack()">BACK</ion-col></ion-row
     >
   </ion-grid>
 </ion-footer>
