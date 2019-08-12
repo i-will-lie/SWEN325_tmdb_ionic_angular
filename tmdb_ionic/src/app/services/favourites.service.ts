@@ -19,7 +19,12 @@ export class FavouritesService {
   resultSub;
   result;
   personalListID;
+  ratedMovies: any;
+  ratedTV: any;
 
+  ratingsTV;
+
+  ratingsMovies;
   constructor(
     private userDbServ: UserDatabaseService,
     private afStore: AngularFirestore,
@@ -76,29 +81,6 @@ export class FavouritesService {
 
   async getFavourites(listID: string) {
     const sessionID = this.sessionServ.sessionID;
-    // const accID = this.sessionServ.accountID;
-    // console.log(
-    //   sessionID,
-    //   accID,
-    //   type,
-    //   "url",
-    //   `${tmdb.tmdbAPI.url}account/${accID}/favorite/${type}?api_key=${
-    //     tmdb.tmdbAPI.apiKey
-    //   }&session_id=${sessionID}`
-    // );
-
-    // return this.http
-    //   .get(
-    //     `${tmdb.tmdbAPI.url}account/${accID}/favorite/${type}?api_key=${
-    //       tmdb.tmdbAPI.apiKey
-    //     }&session_id=${sessionID}`
-    //   )
-    //   .pipe(
-    //     map(results => {
-    //       console.log("raw", results["results"]);
-    //       return results["results"];
-    //     })
-    //   );
 
     console.log(
       sessionID,
@@ -121,14 +103,175 @@ export class FavouritesService {
       .toPromise();
 
     console.log("RES", this.result["items"]);
-    // .pipe(
-    //   map(results => {
-    //     console.log("raw", results["items"]);
-    //     return results["results"];
-    //   })
-    // );
 
     return this.result["items"];
+  }
+
+  checkFavStatus(listID, movieID) {
+    return this.http
+      .get(
+        `${tmdb.tmdbAPI.url}list/${listID}/item_status?api_key=${
+          tmdb.tmdbAPI.apiKey
+        }&session_id=${
+          this.sessionServ.sessionID
+        }&movie_id=${movieID}&language=en-US&page=1`
+      )
+      .toPromise();
+  }
+
+  addToFavourites(itemID) {
+    return this.http
+      .post(
+        `${tmdb.tmdbAPI.url}list/${this.tmdbFavId}/add_item?api_key=${
+          tmdb.tmdbAPI.apiKey
+        }&session_id=${this.sessionServ.sessionID}&language=en-US&page=1`,
+        { media_id: parseInt(itemID) },
+        { headers: { "Content-Type": "application/json;charset=utf-8" } }
+      )
+      .toPromise();
+  }
+
+  removeFromFavourites(listID, itemID) {
+    return this.http
+      .post(
+        `${tmdb.tmdbAPI.url}list/${listID}/remove_item?api_key=${
+          tmdb.tmdbAPI.apiKey
+        }&session_id=${this.sessionServ.sessionID}&language=en-US&page=1`,
+        { media_id: parseInt(itemID) },
+        { headers: { "Content-Type": "application/json;charset=utf-8" } }
+      )
+      .toPromise();
+  }
+
+  async getMovieRatings() {
+    const result = await this.http
+      .get(
+        `${tmdb.tmdbAPI.url}account/${
+          this.sessionServ.accountID
+        }/rated/movies?api_key=${tmdb.tmdbAPI.apiKey}&session_id=${
+          this.sessionServ.sessionID
+        }&language=en-US&page=1`
+      )
+      .toPromise();
+
+    return result["results"];
+  }
+
+  async getTVRatings() {
+    const result = await this.http
+      .get(
+        `${tmdb.tmdbAPI.url}account/${
+          this.sessionServ.accountID
+        }/rated/tv?api_key=${tmdb.tmdbAPI.apiKey}&session_id=${
+          this.sessionServ.sessionID
+        }&language=en-US&page=1`
+      )
+      .toPromise();
+
+    return result["results"];
+  }
+
+  subToMovieRatings() {}
+
+  async setRatedMovies() {
+    console.log(
+      "SET RATE",
+      `${tmdb.tmdbAPI.url}account/${
+        this.sessionServ.accountID
+      }/rated/movies?api_key=${tmdb.tmdbAPI.apiKey}&session_id=${
+        this.sessionServ.sessionID
+      }&language=en-US&page=1`
+    );
+    let res = await this.http
+      .get(
+        `${tmdb.tmdbAPI.url}account/${
+          this.sessionServ.accountID
+        }/rated/movies?api_key=${tmdb.tmdbAPI.apiKey}&session_id=${
+          this.sessionServ.sessionID
+        }&language=en-US&page=1`
+      )
+      .subscribe(res => (this.ratedMovies = res["results"]));
+    //   .toPromise();
+    // this.ratedMovies = res["results"];
+    // console.log(res["results"]);
+  }
+
+  async setRatedTV() {
+    let res = await this.http
+      .get(
+        `${tmdb.tmdbAPI.url}account/${
+          this.sessionServ.accountID
+        }/rated/tv?api_key=${tmdb.tmdbAPI.apiKey}&session_id=${
+          this.sessionServ.sessionID
+        }&language=en-US&page=1`
+      )
+      .subscribe(res => (this.ratedTV = res["results"]));
+    //   .toPromise();
+    // this.ratedTV = res["results"];
+  }
+
+  async getMovieRating(itemType, itemID) {
+    var rating = -1;
+    return await this.http
+      .get(
+        `${tmdb.tmdbAPI.url}account/${
+          this.sessionServ.accountID
+        }/rated/tv?api_key=${tmdb.tmdbAPI.apiKey}&session_id=${
+          this.sessionServ.sessionID
+        }&language=en-US&page=1`
+      )
+      .toPromise()
+      .then(res => {
+        if (res["result"]) {
+          let item = res["result"].filter(res => res["id"] == parseInt(itemID));
+          if (item[0]) {
+            console.log("RATING IS", item[0]["rating"]);
+            return item[0]["rating"];
+          }
+        }
+      });
+  }
+  //https://api.themoviedb.org/3/movie/{movie_id}/rating?api_key=<<api_key>>
+  async rateItem(type, id, rating) {
+    console.log(
+      "rateItem",
+      type,
+      id,
+      rating,
+      `${tmdb.tmdbAPI.url}${type}/${id}/rating?api_key=${
+        tmdb.tmdbAPI.apiKey
+      }&session_id=${this.sessionServ.sessionID}&language=en-US&page=1`
+    );
+    return await this.http
+      .post(
+        `${tmdb.tmdbAPI.url}${type}/${id}/rating?api_key=${
+          tmdb.tmdbAPI.apiKey
+        }&session_id=${this.sessionServ.sessionID}&language=en-US&page=1`,
+        { value: parseInt(rating) },
+        { headers: { "Content-Type": "application/json;charset=utf-8" } }
+      )
+      .toPromise();
+
+    // https://api.themoviedb.org/3/tv/506574/rating?api_key=79ad210fe32318cf14cfeb7de2cb26fa&session_id=b17ae82ff5430a67c16fd06cb934f317ab23c5c3&language=en-US&page=1
+
+    // if (type == "tv") {
+    //   this.setRatedTV();
+    // } else {
+    //   this.setRatedMovies();
+    // }
+    // https://api.themoviedb.org/3/movie/{movie_id}/rating?api_key=<<api_key>>
+  }
+
+  removeRating(itemType, itemID) {
+    return this.http
+      .delete(
+        `${tmdb.tmdbAPI.url}${itemType}/${itemID}/rating?api_key=${
+          tmdb.tmdbAPI.apiKey
+        }&session_id=${this.sessionServ.sessionID}&language=en-US&page=1`,
+
+        { headers: { "Content-Type": "application/json;charset=utf-8" } }
+      )
+      .toPromise();
   }
   getLists() {}
 

@@ -254,21 +254,5 @@ export class AuthenticationService {
       .catch(error => console.log(error));
   }
 
-  // fbIsAuthenticated() {
-  //   console.log("checking auth state", this.authenticationState);
-  //   return this.authenticationState.value;
-  // }
-
-  // checkToken() {
-  //   console.log("checking token", this.authenticationState);
-  //   console.log("ck", this.storage.get(this.fbUserID));
-
-  //   this.storage.get(this.fbUserID).then(res => {
-  //     if (res) {
-  //       console.log("set to true");
-  //       //this.authenticationState = true;
-  //       //this.authenticationState.next(false);
-  //     }
-  //   });
-  // }
+  logout() {}
 }

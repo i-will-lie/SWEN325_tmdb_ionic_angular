@@ -1,3 +1,4 @@
+import { FavouritesService } from "./../../services/favourites.service";
 import { map } from "rxjs/operators";
 import { TmdbAuthenticationService } from "./../../services/tmdb-authentication.service";
 import { UserDatabaseService } from "./../../services/user-database.service";
@@ -23,7 +24,8 @@ export class TmdbLoginPage implements OnInit {
     private sessionServ: SessionService,
     private userDbServ: UserDatabaseService,
     private tmdbAuthServ: TmdbAuthenticationService,
-    private friendServ: FriendsService
+    private friendServ: FriendsService,
+    private favouriteServ: FavouritesService
   ) {}
 
   async ngOnInit() {
@@ -113,15 +115,19 @@ export class TmdbLoginPage implements OnInit {
       this.sessionServ.email,
       this.sessionServ.sessionID
     );
-
+    this.authComplete();
     //console.log("lo", this.userDbServ.getIDFromEmail(this.sessionServ.email));
     //this.tmdbAuthServ.addUser(this.tmdbUsername);
     //this.tmdbAuthServ.addAccID(tmdbAccID["id"]);
+  }
+
+  authComplete() {
     console.log("todash", this.tmdbUsername, this.tmdbPassword);
     this.loginSub.unsubscribe();
     this.friendServ.initFriends();
     this.userDbServ.getListId();
-
+    this.favouriteServ.setRatedMovies();
+    this.favouriteServ.setRatedTV();
     this.router.navigate(["members", "dashboard"]);
   }
 }

@@ -8,7 +8,7 @@ import { tmdb } from "../environments/environment";
 export enum SearchType {
   all = "",
   movie = "movie",
-  series = "series",
+  tv = "tv",
   episode = "episode"
 }
 
@@ -24,6 +24,12 @@ export class SearchService {
   item = null;
   constructor(private http: HttpClient) {}
   searchData(title: string, type: SearchType): Observable<any> {
+    console.log(
+      "serach:",
+      `${tmdb.tmdbAPI.url}search/${type}?api_key=${
+        tmdb.tmdbAPI.apiKey
+      }&language=en-US&page=1&include_adult=false&query=${encodeURI(title)}`
+    );
     this.result = this.http
       .get(
         `${tmdb.tmdbAPI.url}search/${type}?api_key=${
@@ -39,17 +45,18 @@ export class SearchService {
 
     return this.result;
   }
-
-  getDetails(id) {
+  //https://api.themoviedb.org/3/movie/506574?api_key=79ad210fe32318cf14cfeb7de2cb26fa&language=en-US
+  //https://api.themoviedb.org/3/movies/506574?api_key=79ad210fe32318cf14cfeb7de2cb26fa&language=en-US
+  getDetails(type, id) {
     console.log("gettting details");
     console.log(
-      "gett details",
-      `${tmdb.tmdbAPI.url}movie/${id}?api_key=${
+      "GETTTT details",
+      `${tmdb.tmdbAPI.url}${type}/${id}?api_key=${
         tmdb.tmdbAPI.apiKey
       }&language=en-US`
     );
     return this.http.get(
-      `${tmdb.tmdbAPI.url}movie/${id}?api_key=${
+      `${tmdb.tmdbAPI.url}${type}/${id}?api_key=${
         tmdb.tmdbAPI.apiKey
       }&language=en-US`
     );

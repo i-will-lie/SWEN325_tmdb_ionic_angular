@@ -19,8 +19,8 @@
       (ionChange)="searchChanged($event)"
     >
       <ion-select-option value="movie">Movie</ion-select-option>
-      <ion-select-option value="series">Series</ion-select-option>
-      <ion-select-option value="episode">Episode</ion-select-option>
+      <ion-select-option value="tv">Television</ion-select-option>
+      <!-- <ion-select-option value="episode">Episode</ion-select-option> -->
     </ion-select>
   </ion-item>
 
@@ -29,19 +29,19 @@
     <ion-item
       button
       *ngFor="let item of results | async"
-      [routerLink]="['/', 'members', 'detail', item.id]"
+      [routerLink]="['/', 'members', 'detail', item.id, type]"
     >
-      <ion-list>
-        <ion-label>{{ item.title }}</ion-label>
-        <ion-label>{{ item.release_date }}</ion-label>
-        <ion-label>{{ item.vote_average }}</ion-label>
-      </ion-list>
       <ion-thumbnail
         ><ion-img
           [src]="'https://image.tmdb.org/t/p/original' + item?.poster_path"
         >
         </ion-img
       ></ion-thumbnail>
+      <ion-list>
+        <ion-label>{{ item.title }}{{ item.name }}</ion-label>
+        <ion-label>{{ item.release_date }}{{ item.first_air_date }}</ion-label>
+        <ion-label>{{ item.vote_average }}</ion-label>
+      </ion-list>
     </ion-item>
     <!-- http://localhost:8100/getImage(item.poster_path) -->
     <!--<ion-item

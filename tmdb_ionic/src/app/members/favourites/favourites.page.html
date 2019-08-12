@@ -9,23 +9,30 @@
 <ion-content padding>
   <ion-list
     >Results
-    <ion-item
-      button
-      *ngFor="let item of result"
-      [routerLink]="['/', 'members', 'detail', item.id]"
-    >
-      <ion-list
-        >ONE
-        <ion-label>{{ item?.title }}</ion-label>
-        <ion-label>{{ item?.release_date }}</ion-label>
-        <ion-label>{{ item?.vote_average }}</ion-label>
-      </ion-list>
-      <ion-thumbnail
-        ><ion-img
-          [src]="'https://image.tmdb.org/t/p/original' + item?.poster_path"
-        >
-        </ion-img
-      ></ion-thumbnail>
+    <ion-item *ngFor="let item of result">
+      <ion-item
+        button
+        [routerLink]="['/', 'members', 'detail', item.id, favType]"
+      >
+        <ion-thumbnail
+          ><ion-img
+            [src]="'https://image.tmdb.org/t/p/original' + item?.poster_path"
+          >
+          </ion-img
+        ></ion-thumbnail>
+        <ion-list
+          >ONE
+          <ion-label>{{ item?.original_title }}</ion-label>
+          <ion-label>{{ item?.release_date }}</ion-label>
+          <ion-label>{{ item?.vote_average }}</ion-label>
+        </ion-list>
+      </ion-item>
+
+      <ion-icon
+        *ngIf="isOwner()"
+        (click)="removeFromFavourites(item?.id)"
+        name="close-circle-outline"
+      ></ion-icon>
     </ion-item>
   </ion-list>
 

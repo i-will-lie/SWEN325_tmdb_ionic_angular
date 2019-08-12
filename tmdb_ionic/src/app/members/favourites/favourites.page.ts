@@ -1,3 +1,4 @@
+import { HttpClient } from "@angular/common/http";
 import { FriendsService } from "./../../services/friends.service";
 import { SessionService } from "./../../services/session.service";
 import { AuthenticationService } from "./../../services/authentication.service";
@@ -18,11 +19,13 @@ export enum FavouriteType {
 })
 export class FavouritesPage implements OnInit {
   result: Observable<any>;
-  favType = "movies";
+  favType = "movie";
   currentUsername;
   currentID;
   listID;
   list;
+
+  ratings;
   constructor(
     private authService: AuthenticationService,
     private favouriteServ: FavouritesService,
@@ -61,5 +64,27 @@ export class FavouritesPage implements OnInit {
       this.favouriteServ.tmdbFavId
     );
     console.log("fave", this.favType, this.currentID, this.result);
+  }
+
+  checkIfFavourite(itemID) {
+    //let status;
+    return this.favouriteServ
+      .checkFavStatus(this.favouriteServ.tmdbFavId, itemID)
+      .then(res => {
+        console.log("STATUS", itemID, res["item_present"]);
+        return res["item_present"];
+      });
+  }
+  removeFromFavourites(itemID) {
+    this.favouriteServ
+      .removeFromFavourites(this.favouriteServ.tmdbFavId, itemID)
+      .then(res => {
+        console.log("removed", res);
+        this.getFavourites();
+      });
+  }
+
+  isOwner() {
+    return this.sessionServ.accountID == this.favouriteServ.tmdbAccId;
   }
 }

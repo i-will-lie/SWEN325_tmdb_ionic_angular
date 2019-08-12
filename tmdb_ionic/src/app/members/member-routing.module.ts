@@ -23,7 +23,7 @@ const routes: Routes = [
   },
   {
     canActivate: [AngularFireAuthGuard, TmdbAuthGuard],
-    path: "detail/:id",
+    path: "detail/:id/:type",
     loadChildren: "./detail/detail.module#DetailPageModule"
   },
   {
@@ -39,10 +39,15 @@ const routes: Routes = [
     loadChildren: "./friends/friends.module#FriendsPageModule"
   },
   {
+    path: "image/:poster_path",
+    loadChildren: "./image/image.module#ImagePageModule"
+  },
+  {
     //path: "members/**",
     path: "**",
     redirectTo: "dashboard"
-  }
+  },
+  { path: "image", loadChildren: "./image/image.module#ImagePageModule" }
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],

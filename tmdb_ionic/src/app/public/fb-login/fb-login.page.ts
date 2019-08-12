@@ -23,9 +23,10 @@ export class FbLoginPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.email = this.fbAuth.fbEmail;
-    this.password = this.fbAuth.fbPassword;
+    this.email = "ss@ss.com"; //this.fbAuth.fbEmail;
+    this.password = "ss1234"; //this.fbAuth.fbPassword;
     console.log(this.email, this.password);
+    this.fbLogin();
   }
 
   fbLogin() {

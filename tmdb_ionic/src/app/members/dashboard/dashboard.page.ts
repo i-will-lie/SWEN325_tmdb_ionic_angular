@@ -4,6 +4,7 @@ import { UserDatabaseService } from "./../../services/user-database.service";
 import { AuthenticationService } from "./../../services/authentication.service";
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
+import { ActionSheetController } from "@ionic/angular";
 
 @Component({
   selector: "app-dashboard",
@@ -12,12 +13,14 @@ import { Router } from "@angular/router";
 })
 export class DashboardPage implements OnInit {
   favouriteListID;
+  actionSheet;
   constructor(
     private authService: AuthenticationService,
     private router: Router,
     private userDbServ: UserDatabaseService,
     private sessionServ: SessionService,
-    private favouriteServ: FavouritesService
+    private favouriteServ: FavouritesService,
+    public asCtrl: ActionSheetController
   ) {}
 
   async ngOnInit() {

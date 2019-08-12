@@ -52,7 +52,7 @@ export class UserDatabaseService {
   // }
 
   addTmdbUser(fbUserEmail, tmdbUser) {
-    console.log("fb", fbUserEmail, "tmdb", tmdbUser);
+    //console.log("fb", fbUserEmail, "tmdb", tmdbUser);
     this.firestore
       .collection("UserInfo")
       .doc(fbUserEmail)
@@ -60,7 +60,7 @@ export class UserDatabaseService {
   }
 
   addTmdbSession(fbUserEmail, sessionID) {
-    console.log("updatessid", fbUserEmail, sessionID);
+    //console.log("updatessid", fbUserEmail, sessionID);
     console.log("lo", this.getIDFromEmail(fbUserEmail));
     this.sessionServ.sessionID = sessionID;
     this.firestore
@@ -128,6 +128,29 @@ export class UserDatabaseService {
     return id;
   }
 
+  // async setUpFav() {
+  //   let favList = await this.firestore
+  //     .collection("UserInfo")
+  //     .doc(this.sessionServ.email)
+  //     .valueChanges()
+  //     .subscribe(res => {
+  //       favList = res["favorites"];
+  //     });
+  //   console.log("faavLI", favList);
+  //   //vreate new list
+  //   let favID = await this.http.post(
+  //     `${tmdb.tmdbAPI.url}list?api_key=${tmdb.tmdbAPI.apiKey}&session_id=${
+  //       this.sessionServ.sessionID
+  //     }`,
+  //     { name: "favourites", description: "", language: "" },
+  //     { headers: { "Content-Type": "application/json;charset=utf-8" } }
+  //   );
+  //   //118788
+  //   await console.log("favID", favID);
+  //   return favID.toPromise();
+  //   //{ headers: { "Content-Type": "application/json;charset=utf-8" } }
+  // }
+
   async getListId() {
     console.log(
       "FSDFDSF",
@@ -135,6 +158,7 @@ export class UserDatabaseService {
         tmdb.tmdbAPI.apiKey
       }&session_id=${this.sessionServ.sessionID}`
     );
+    //get lists of movies
     let list = await this.http
       .get(
         `${tmdb.tmdbAPI.url}account/${

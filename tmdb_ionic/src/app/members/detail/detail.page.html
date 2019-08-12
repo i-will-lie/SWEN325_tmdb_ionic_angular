@@ -1,19 +1,41 @@
 <ion-header>
   <ion-toolbar>
     <ion-back-button></ion-back-button>
-    <ion-title>detail</ion-title>
+    <ion-card-title
+      >{{ itemDetails?.title }}{{ itemDetails?.name }}</ion-card-title
+    >
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <ion-card>
-    <ion-card-title>{{ itemDetails?.title }}</ion-card-title>
-    <ion-card-subtitle>{{ itemDetails?.release_date }}</ion-card-subtitle>
-    <ion-card-content>
-      <ion-img
-        [src]="'https://image.tmdb.org/t/p/original' + itemDetails?.poster_path"
-      >
-      </ion-img>
-    </ion-card-content>
+    <ion-card-subtitle
+      >{{ itemDetails?.release_date
+      }}{{ itemDetails?.first_air_date }}</ion-card-subtitle
+    >
+    <ul>
+      Genres
+      <li *ngFor="let genre of itemGenres">help{{ genre.name }}</li>
+    </ul>
+    <ion-label> Vote Count {{ itemDetails?.count }}</ion-label>
+    <ion-label>Avg Rating {{ itemDetails?.vote_average }}</ion-label>
+    <ion-label>
+      <ion-item>Your Rating {{ userRating }}</ion-item></ion-label
+    >
+
+    <ion-img
+      (click)="viewImage()"
+      [src]="'https://image.tmdb.org/t/p/original' + itemDetails?.poster_path"
+    >
+    </ion-img>
   </ion-card>
 </ion-content>
+<ion-footer>
+  <ion-card>
+    <ion-card-content class="overview">
+      {{ itemDetails?.overview }}
+    </ion-card-content>
+  </ion-card>
+  <ion-button (click)="menu.showMenu()">MENU</ion-button>
+  <ion-button (click)="showActions()">MORE ACITIONS</ion-button>
+</ion-footer>
