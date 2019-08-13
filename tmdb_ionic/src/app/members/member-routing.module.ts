@@ -31,7 +31,7 @@ const routes: Routes = [
     loadChildren: "./favourites/favourites.module#FavouritesPageModule"
   },
   {
-    path: "profile/:email",
+    path: "profile/:email/:username",
     loadChildren: "./profile/profile.module#ProfilePageModule"
   },
   {

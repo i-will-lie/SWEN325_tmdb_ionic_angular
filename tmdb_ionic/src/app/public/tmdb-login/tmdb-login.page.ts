@@ -1,8 +1,5 @@
-import { LoadingController } from "@ionic/angular";
 import { MenusService } from "./../../services/menus.service";
-import { SearchService } from "./../../search.service";
 import { FavouritesService } from "./../../services/favourites.service";
-import { map } from "rxjs/operators";
 import { TmdbAuthenticationService } from "./../../services/tmdb-authentication.service";
 import { UserDatabaseService } from "./../../services/user-database.service";
 import { SessionService } from "./../../services/session.service";
@@ -50,27 +47,33 @@ export class TmdbLoginPage implements OnInit {
     await this.load.present();
 
     this.menu.presentToast("Checking For Existing Credentials");
+
     //subscribe to the firebase database to check if there are existing credentials.
     this.loginSub = this.userDbServ.dbUser.subscribe(res => {
       //if credentials exist login using credentials from firebase.
       this.load.dismiss();
       if (res["tmdbUser"] != null) {
+        console.log("YES");
         this.menu.presentToast("Logging in with Existing Details");
         (this.tmdbUsername = res["tmdbUser"]["username"]),
           (this.tmdbPassword = res["tmdbUser"]["password"]);
 
         this.tmdbLogin();
       } else {
+        console.log("NONE");
         this.menu.presentToast("Please Login with TMDB Account");
       }
     });
+    console.log("done");
   }
   /**
    * Attempt to authenticate with TMDB API by handshaking with tokens.
    */
   async tmdbLogin() {
+    console.log("LOGIN");
+    this.load = await this.menu.createLoading();
     await this.load.present();
-    //this.menu.presentLoading().then(async res => {
+
     await this.tmdbAuthServ.setAuthSub();
 
     var tmdbSessionId; //to hold the session ID
@@ -86,7 +89,6 @@ export class TmdbLoginPage implements OnInit {
       this.load.dismiss();
       return;
     }
-
     //login with token to validate it.
     const loginRes = await this.tmdbAuthServ.tmdbAuthenticateLoginWithToken(
       this.tmdbUsername,
@@ -95,7 +97,6 @@ export class TmdbLoginPage implements OnInit {
     );
 
     if (!loginRes["success"]) {
-      console.log("ERROR Login");
       this.menu.presentAlert("Incorrect Login Details");
       this.load.dismiss();
       return;
@@ -147,12 +148,20 @@ export class TmdbLoginPage implements OnInit {
    * so they will be ready when needed.
    */
   authComplete() {
+    this.load.dismiss();
     this.loginSub.unsubscribe();
     this.friendServ.initFriends();
     this.userDbServ.getListId();
     this.favouriteServ.setRatedMovies();
     this.favouriteServ.setRatedTV();
-    this.load.dismiss();
+
     this.router.navigate(["members", "dashboard"]);
+  }
+
+  /**
+   * Cancel the login and return to login page.
+   */
+  cancel() {
+    this.authService.logout();
   }
 }

@@ -123,6 +123,14 @@ export class TmdbAuthenticationService {
       }
     });
   }
+
+  /**
+   * Create record of a tmdb user and add to the database.
+   *
+   * @param tmdbUsername :string
+   * @param tmdbPassword :string
+   * @param tmdbAccountID :string
+   */
   tmdbAddUser(
     tmdbUsername: string,
     tmdbPassword: string,
@@ -133,18 +141,20 @@ export class TmdbAuthenticationService {
       password: tmdbPassword,
       accountID: tmdbAccountID
     };
+
+    //assign the user information to the session serve
     this.sessionServ.accountID = tmdbAccountID;
     this.sessionServ.username = tmdbUsername;
 
-    console.log("adding user", this.sessionServ.email, newTmdbUser);
+    //add tmdb user details to the fb database.
     this.userDbServ.addTmdbUser(this.sessionServ.email, newTmdbUser);
   }
 
+  /**
+   * Check if user is authenticated for tmdb.
+   * The session is autthen in sessino ig isn't -1.
+   */
   tmdbIsAuthenticated() {
-    var b: boolean = this.sessionServ.sessionID != -1;
-
-    console.log(this.sessionServ.sessionID, "sid", b);
-    return b;
+    return this.sessionServ.sessionID != -1;
   }
-  //
 }

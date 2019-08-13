@@ -1,11 +1,8 @@
 import { NavController } from "@ionic/angular";
-import { UserDatabaseService } from "./../../services/user-database.service";
-import { Friend } from "./../../models/friend";
 import { SessionService } from "./../../services/session.service";
 import { FriendsService } from "./../../services/friends.service";
 import { Component, OnInit } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
-import { AngularFireDatabase, AngularFireList } from "angularfire2/database";
 import { MenusService } from "../../services/menus.service";
 
 @Component({
@@ -13,11 +10,15 @@ import { MenusService } from "../../services/menus.service";
   templateUrl: "./friends.page.html",
   styleUrls: ["./friends.page.scss"]
 })
+/**
+ * Page functionaliity for finding users and displaying friends.
+ */
 export class FriendsPage implements OnInit {
-  searchFriend: string = "";
-  friendResult;
-  currentFriends = [];
-  searchSub;
+  searchFriend: string = ""; //target user
+  friendResult; //search result
+  currentFriends = []; //friends of current user
+  searchSub; //subscription to search result
+
   constructor(
     private friendServ: FriendsService,
     private afStore: AngularFirestore,
@@ -26,46 +27,31 @@ export class FriendsPage implements OnInit {
     private navCtrl: NavController
   ) {}
 
-  ngOnInit() {
-    // this.friendServ.setFriends().subscribe(res => {
-    //   if (res["friends"]) {
-    //     this.currentFriends = res["friends"];
-    //   } else {
-    //     this.currentFriends = [];
-    //   }
-    // });
-  }
+  ngOnInit() {}
 
+  /**
+   * Searches the firebase database for user with the currently given name.
+   * Assigns the result to the field to allow it to be displayed.
+   */
   async searchChanged() {
-    // this.result = await this.friendService.findFriends(this.searchFriend);
-    // this.friendService.userDb.valueChanges().subscribe(res => {
-    //   console.log("frein res", res, res[0]);
-    //   this.result = res;
-    // });
     this.searchSub = await this.afStore
       .collection("UserInfo", ref =>
         ref.where("tmdbUser.username", "==", this.searchFriend)
       )
       .valueChanges()
       .subscribe(res => {
-        // console.log("frein res", res, res[0]);
-        if (res[0]) {
+        //friend is found if the result is not current user
+        if (
+          res[0] &&
+          res[0]["tmdbUser"]["username"] != this.sessionServ.username
+        ) {
           this.friendResult = res[0];
         } else {
           this.friendResult = null;
         }
       });
-    //console.log(this.result, "res");
   }
-  addFriend(email, username, accountID, favouriteID) {
-    //console.log("add friend", email, username, accountID);
-    if (email == this.sessionServ.email) {
-      this.menu.presentAlert("You Can't Friend Yourself");
-    } else {
-      this.friendServ.addFriend(email, username, accountID, favouriteID);
-      this.menu.presentToast("Friend added: " + username);
-    }
-  }
+  // /**
 
   getCurrentFriends() {
     //console.log("c friends", this.friendServ.currentFriends);

@@ -28,13 +28,31 @@
     >
       <p>
         Please enter password between 6 and 20 charaacters with at least a
-        number.
+        number and letter.
       </p>
     </ion-item>
-    <ion-item expand="full" color="primary" (click)="fbLogin()">Login</ion-item>
+    <ion-item
+      expand="full"
+      color="primary"
+      (click)="fbLogin()"
+      [disabled]="
+        !loginForm.controls.password.valid || !loginForm.controls.email.valid
+      "
+      >Login</ion-item
+    >
   </form>
-  <ion-item expand="block" color="secondary" (click)="fbRegister()"
+  <ion-item
+    expand="block"
+    color="secondary"
+    (click)="fbRegister()"
+    [disabled]="
+      !loginForm.controls.password.valid || !loginForm.controls.email.valid
+    "
     >Register</ion-item
+  ><ion-item-divider></ion-item-divider>
+  <ion-item
+    (click)="requestPasswordReset()"
+    [disabled]="!loginForm.controls.email.valid"
+    >Forgot Password</ion-item
   >
-  <ion-item (click)="requestPasswordReset()">Forgot Password</ion-item>
 </ion-list>

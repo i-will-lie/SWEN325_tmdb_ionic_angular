@@ -2,20 +2,18 @@ import { UserDatabaseService } from "./user-database.service";
 import { User } from "../models/user";
 
 import { TmdbUser } from "./../models/tmdbUser";
-import { environment } from "./../../environments/environment.prod";
+
 import { Platform, ToastController, AlertController } from "@ionic/angular";
 import { Injectable } from "@angular/core";
 import { Storage } from "@ionic/storage";
-import { BehaviorSubject } from "rxjs";
+
 import { AngularFireAuth } from "@angular/fire/auth";
 import "../models/fbUser";
 import { FbUser } from "../models/fbUser";
 import { HttpClient } from "@angular/common/http";
-import { resolve } from "q";
-import { AngularFireDatabase } from "angularfire2/database";
 
-var fbLog = "auth-token";
-//var currentSessionID = null;
+import { AngularFireDatabase } from "angularfire2/database";
+import { Router } from "@angular/router";
 
 const tmdbURL = "https://api.themoviedb.org/3/";
 const tmdbAPI = "79ad210fe32318cf14cfeb7de2cb26fa";
@@ -24,23 +22,17 @@ const tmdbAPI = "79ad210fe32318cf14cfeb7de2cb26fa";
   providedIn: "root"
 })
 export class AuthenticationService {
-  fbUser: FbUser;
-  tmdbUser: TmdbUser;
-  fbUserID: string;
-  fbUserToken: string;
-  //authenticationState = new BehaviorSubject(false);
-  //authenticated: boolean = false;
-  tmdbToken: string;
-  currentUser: string;
-  currentSessionID: string;
-  currentTmdbAccID: string;
+  fbUser: FbUser; //current fb user object
+  tmdbUser: TmdbUser; //current tmdb user object
 
-  fbPassword = "";
-  fbEmail = "";
+  currentSessionID: string; //tracker for tmdb session id
+  currentTmdbAccID: string; //tacker for tmdb account id
+
+  //used for presenting toasts and alerts
   toast;
   alert;
 
-  private forgotEmail;
+  //private forgotEmail;
   tmdbAuthenticated = false;
   constructor(
     private storage: Storage,
@@ -50,46 +42,45 @@ export class AuthenticationService {
     private http: HttpClient,
     private afDatabase: AngularFireDatabase,
     private userDbService: UserDatabaseService,
-    private alertCtrl: AlertController
-  ) {
-    // this.plt.ready().then(() => {
-    //   console.log("platform ready");
-    //   this.checkToken();
-    // });
-  }
+    private alertCtrl: AlertController,
+    private router: Router
+  ) {}
 
-  async fbLogin(email: string, password: string) {
+  /**
+   * Attempt to login in to firebase server with given credentials
+   * and return true is successful
+   * @param email:string
+   * @param password:string
+   */
+  async fbLogin(email: string, password: string): Promise<boolean> {
     console.log(email, password);
-    let success = false;
-    const result = await this.afAuth.auth
+
+    let success = false; //flag for succcess of login attempt
+
+    //sign in to firebase and set success to true if successful
+    await this.afAuth.auth
       .signInWithEmailAndPassword(email, password)
       .then(res => {
         console.log("LOG", res);
+
         this.fbUser = { email: email, password: password };
         success = true;
       })
       .catch(error => this.presentAlert(error.message));
 
     return success;
-    // console.log(result);
-    // console.log(result["user"]["W"]["O"]);
-    // console.log(result["user"]["l"]);
-    // this.fbUserID = result["user"]["W"]["O"];
-    //this.fbUserToken = result["user"]["l"];
-    //this.authenticationState.next(true);
-    // return this.storage.set(this.fbUserID, this.fbUserToken).then(res => {
-    //   //this.authenticationState = true;
-    //   this.fbuser = { email: email, password: password };
-    //   return true;
-    // });
   }
 
-  async fbRegister(email: string, password: string) {
+  /**
+   * Attempt to register to firebase server with given credentials
+   * and return true is successful
+   *
+   * @param email:string
+   * @param password:string
+   */
+  async fbRegister(email: string, password: string): Promise<boolean> {
     try {
-      console.log("reg1 ", email, password);
       this.afAuth.auth.createUserWithEmailAndPassword(email, password);
-      console.log("reg ", email, password);
-
       this.fbAddUser({ email: email, password: password });
 
       return true;
@@ -99,6 +90,11 @@ export class AuthenticationService {
     }
   }
 
+  /**
+   * Present a Toast with the given message.
+   *
+   * @param message :string
+   */
   async presentToast(message) {
     this.toast = await this.toastCtrl.create({
       message: message,
@@ -110,6 +106,10 @@ export class AuthenticationService {
     await this.toast.present();
   }
 
+  /**
+   * Present an Alert with the given message.
+   * @param message: string
+   */
   async presentAlert(message) {
     this.alert = await this.alertCtrl.create({
       message: message,
@@ -118,6 +118,12 @@ export class AuthenticationService {
     await this.alert.present();
   }
 
+  /**
+   * Add a user to the database.
+   * Creates a User with the given FbUser.
+   *
+   * @param fbUser :firebase user
+   */
   fbAddUser(fbUser: FbUser) {
     const newUser = {
       fbUser: fbUser,
@@ -130,12 +136,14 @@ export class AuthenticationService {
 
     //add user to data base
     this.userDbService.createNewUser(newUser);
-    // .then(res => {
-    //   this.userDbService.addFriendCollection(fbUser.email);
-    // });
-    console.log("start");
   }
 
+  /**
+   *
+   * @param tmdbUsername
+   * @param tmdbPassword
+   * @param tmdbAccountID
+   */
   tmdbAddUser(
     tmdbUsername: string,
     tmdbPassword: string,
@@ -225,48 +233,54 @@ export class AuthenticationService {
     });
   }
 
-  addUser(newUser) {
-    this.currentUser = newUser;
-  }
-  addAccID(newID) {
-    this.currentTmdbAccID = newID;
-  }
+  // addUser(newUser) {
+  //   this.currentUser = newUser;
+  // }
+  // addAccID(newID) {
+  //   this.currentTmdbAccID = newID;
+  // }
 
-  getCurrentUser() {
-    return this.currentUser;
-  }
+  // getCurrentUser() {
+  //   return this.currentUser;
+  // }
   async logout() {
-    //const res = await this.userDbService.tmdbLoggedOn(this.fbUser.email);
-
-    this.userDbService.dbLogout(this.fbUser.email);
-    this.afAuth.auth.signOut();
-    //console.log("logged on", res);
-    // this.afAuth.auth.signOut();
-    // const res = await this.storage.remove(this.fbUserID);
-    // //this.authenticationState.next(false);
-    // console.log("fblogout");
-    // await this.userDbService.logout(this.fbUser.email);
-    // this.tmdbAuthenticated = false;
-    // return res;
+    this.alert = await this.alertCtrl.create({
+      message: "Do you wish to leave?",
+      buttons: [
+        {
+          text: "Leave",
+          handler: () => {
+            this.userDbService.dbLogout(this.fbUser.email);
+            this.afAuth.auth.signOut();
+            this.router.navigate([""]);
+          }
+        },
+        { text: "Stay", role: "cancel" }
+      ]
+    });
+    await this.alert.present();
   }
+  // /**
+
   // getAccID() {
   //   return this.currentTmdbAccID;
   // }
   // getSessionID() {
   //   return this.currentSessionID;
   // }
-  getEmail() {
-    return this.fbUser.email;
-  }
 
-  setForgotEmail(forgotEmail: string) {
-    this.forgotEmail = forgotEmail;
-  }
+  /**
+   * Get email of current user being accessed.
+   */
+  // getCurrentEmail() {
+  //   return this.fbUser.email;
+  // }
 
-  getForgotEmail() {
-    return this.forgotEmail;
-  }
-
+  /**
+   * Firebase password reset request.
+   *
+   * @param email:string
+   */
   resetPassword(email: string) {
     this.afAuth.auth
       .sendPasswordResetEmail(email)

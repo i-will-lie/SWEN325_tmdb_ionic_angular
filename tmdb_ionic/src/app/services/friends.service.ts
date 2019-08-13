@@ -57,6 +57,7 @@ export class FriendsService {
   }
 
   addFriend(email, username, accountID, favouriteID) {
+    console.log("addFirend", email, username, accountID, favouriteID);
     const newFriend: Friend = {
       email: email,
       username: username,

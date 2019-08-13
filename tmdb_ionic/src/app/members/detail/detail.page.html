@@ -13,10 +13,11 @@
       >{{ itemDetails?.release_date
       }}{{ itemDetails?.first_air_date }}</ion-card-subtitle
     >
-    <ul>
-      Genres
-      <li *ngFor="let genre of itemGenres">help{{ genre.name }}</li>
-    </ul>
+
+    <ion-list>
+      <ion-label *ngFor="let genre of itemGenres">{{ genre.name }} </ion-label>
+    </ion-list>
+
     <ion-grid>
       <ion-row
         ><ion-col

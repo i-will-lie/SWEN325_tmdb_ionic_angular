@@ -134,7 +134,7 @@ export class MenusService {
    * @param message :string message to display.
    */
   async presentAlert(message: string) {
-    this.alert = this.alertCtrl.create({
+    this.alert = await this.alertCtrl.create({
       message: message,
       buttons: ["OK"]
     });

@@ -13,5 +13,9 @@
     <ion-input type="password" [(ngModel)]="tmdbPassword">Password: </ion-input>
   </ion-item>
 
-  <ion-button (click)="tmdbLogin()" expand="block">Login</ion-button>
+  <ion-item (click)="tmdbLogin()" color="primary" expand="block"
+    >Login</ion-item
+  >
+  <ion-item-divider></ion-item-divider>
+  <ion-item class="" (click)="cancel()">Cancel</ion-item>
 </ion-content>

@@ -85,7 +85,6 @@ export class DetailPage implements OnInit {
 
   async getItemRating(ratings) {
     //var res = this.favouriteServ.ratedMovies;
-    console.log("RATINGggggggggggggggggggggggggggg", ratings);
     if (ratings != []) {
       var item = await ratings.filter(
         res => res["id"] == parseInt(this.itemID)
@@ -94,9 +93,7 @@ export class DetailPage implements OnInit {
       console.log("ITEM[0]", item, item[0]);
 
       if (item[0]) {
-        console.log("ITEM is not empty", item, item[0]);
         this.userRating = await item[0]["rating"];
-        console.log("RATING", this.userRating);
       } else {
         //this.userRating = -1;
         this.userRating = "Not Voted";
@@ -205,7 +202,6 @@ export class DetailPage implements OnInit {
                         this.favouriteServ
                           .rateItem(this.itemType, this.itemID, data)
                           .then(res => {
-                            console.log("rat result", res);
                             this.ngOnInit();
                           });
                       }
@@ -220,6 +216,7 @@ export class DetailPage implements OnInit {
             icon: "heart",
             handler: () => {
               this.favouriteServ.addToFavourites(this.itemID).then(res => {
+                this.menu.presentToast("Added Title");
                 this.ngOnInit();
               });
             }
@@ -227,31 +224,54 @@ export class DetailPage implements OnInit {
           {
             text: "Remove Rating",
             icon: "remove",
-            handler: () => {
-              this,
-                this.favouriteServ
-                  .removeRating(this.itemType, this.itemID)
-                  .then(res => {
-                    this.ngOnInit();
-                  });
+            handler: async () => {
+              this.alert = await this.alertCtrl.create({
+                message: "Do you wish to Remove?",
+                buttons: [
+                  {
+                    text: "Remove",
+                    handler: () => {
+                      this.favouriteServ
+                        .removeRating(this.itemType, this.itemID)
+                        .then(res => {
+                          this.menu.presentToast("Rating Removed");
+                          this.ngOnInit();
+                        });
+                    }
+                  },
+                  { text: "Keep", role: "cancel" }
+                ]
+              });
+              this.alert.present();
             }
           },
           {
             text: "Remove From Favourites",
             icon: "heart-dislike",
-            handler: () => {
-              this,
-                this.favouriteServ
-                  .removeFromFavourites(
-                    this.favouriteServ.tmdbFavId,
-                    this.itemID
-                  )
-                  .then(res => {
-                    this.ngOnInit();
-                  });
+            handler: async () => {
+              this.alert = await this.alertCtrl.create({
+                message: "Do you wish to Remove?",
+                buttons: [
+                  {
+                    text: "Remove",
+                    handler: () => {
+                      this.favouriteServ
+                        .removeFromFavourites(
+                          this.favouriteServ.tmdbFavId,
+                          this.itemID
+                        )
+                        .then(res => {
+                          this.menu.presentToast("Item Removed");
+                          this.ngOnInit();
+                        });
+                    }
+                  },
+                  { text: "Keep", role: "cancel" }
+                ]
+              });
+              this.alert.present();
             }
           },
-
           { text: "" },
           {
             text: "Cancel",
@@ -266,25 +286,9 @@ export class DetailPage implements OnInit {
   }
 
   viewImage() {
-    console.log("CLICKDF", this.itemDetails[this.posterPath]);
     this.router.navigate(["/", "members", "image", this.posterPath]);
   }
-  // getAccount() {
-  //   console.log("getting account");
-  //   this.list = this.http
-  //     .get(
-  //       `https://api.themoviedb.org/3/account?api_key=${
-  //         this.movieService.apiKey
-  //       }`,
-  //       {
-  //         params: {
-  //           api_key: "79ad210fe32318cf14cfeb7de2cb26fa",
-  //           session_id: this.auth.tmdbUser.sessionID
-  //         }
-  //       }
-  //     )
-  //     .subscribe(res => console.log(res));
-  // }
+
   goBack() {
     this.navCtrl.pop();
   }

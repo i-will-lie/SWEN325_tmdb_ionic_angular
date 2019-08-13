@@ -1,3 +1,4 @@
+import { MenusService } from "./../../services/menus.service";
 import { SearchType, SearchService } from "./../../search.service";
 import { Component, OnInit, inject } from "@angular/core";
 import { Observable } from "rxjs";
@@ -23,7 +24,8 @@ export class SearchPage implements OnInit {
   constructor(
     private searchService: SearchService,
     private router: Router,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    public menu: MenusService
   ) {}
 
   ngOnInit() {}

@@ -1,10 +1,9 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { tmdb } from "./../../environments/environment";
-import { map } from "rxjs/operators";
 import { SessionService } from "./session.service";
 import { Observable } from "rxjs";
 import { User } from "./../models/user";
-import { Injectable, Type } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
 
 @Injectable({
@@ -40,17 +39,6 @@ export class UserDatabaseService {
       .set(-1);
   }
 
-  // test() {
-  //   console.log(
-  //     "BLABJFD",
-  //     this.firestore
-  //       .collection("UserInfo")
-  //       .doc(this.sessionServ.email)
-  //       .snapshotChanges()
-  //       .map()
-  //   );
-  // }
-
   addTmdbUser(fbUserEmail, tmdbUser) {
     //console.log("fb", fbUserEmail, "tmdb", tmdbUser);
     this.firestore
@@ -76,10 +64,10 @@ export class UserDatabaseService {
       .doc(fbUserEmail)
       .update({ sessionID: -1 });
 
-    // this.firestore
-    //   .collection("UserInfo")
-    //   .doc(fbUserEmail)
-    //   .update({ tmdbUser: -1 });
+    if (this.favSub) {
+      this.favSub.unsubscribe();
+    }
+    this.dbUser = null;
   }
 
   // tmdbLoggedOn(fbUserEmail) {
@@ -94,10 +82,6 @@ export class UserDatabaseService {
       .collection("UserInfo")
       .doc(fbUserEmail)
       .valueChanges();
-    // .subscribe(res => {
-    //   this.dbInfo = res;
-    // });
-    //await console.log("db ___Uder", this.dbUser);
   }
 
   async updateMessage(fbUserEmail, newMessage) {
@@ -107,14 +91,14 @@ export class UserDatabaseService {
       .doc(fbUserEmail)
       .update({ message: newMessage });
   }
-  getDbInfo() {
-    return this.dbInfo;
-  }
+  // getDbInfo() {
+  //   return this.dbInfo;
+  // }
 
-  getDbUser() {
-    var user;
-    this.dbUser;
-  }
+  // getDbUser() {
+  //   var user;
+  //   this.dbUser;
+  // }
 
   async getIDFromEmail(email: string) {
     var id;
@@ -192,8 +176,5 @@ export class UserDatabaseService {
         console.log("FAV res", res["favourites"]);
         this.favouriteListID = res["favourites"];
       });
-  }
-  logout() {
-    //this.dbUser.unsubscribe();
   }
 }

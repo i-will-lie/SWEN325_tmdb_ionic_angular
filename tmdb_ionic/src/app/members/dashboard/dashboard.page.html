@@ -1,11 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Welcome {{ getCurrentUsername() }}</ion-title>
+    <ion-card
+      ><ion-card-subtitle>Popular Title</ion-card-subtitle>
+      <ion-card-title>{{ randomItem?.title }}</ion-card-title></ion-card
+    >
   </ion-toolbar>
-  <ion-row
-    ><ion-card-header>{{ randomItem?.title }}</ion-card-header
-    ><ion-item (click)="navigateToDetail()">Go View</ion-item></ion-row
-  >
 </ion-header>
 <ion-content>
   <ion-img
@@ -18,44 +18,47 @@
   <ion-grid>
     <ion-row>
       <ion-col
-        ><ion-item class="button" (click)="navigate('search')"
-          >SEARCH</ion-item
-        ></ion-col
-      >
-      <ion-col
         ><ion-item
           class="button"
           (click)="
-            navigateToFavourite(
-              'favourites',
-              getCurrentAccId(),
-              getCurrentUsername(),
-              getCurrentListID()
+            navigateToProfile(
+              'profile',
+              getCurrentUserEmail(),
+              getCurrentUsername()
             )
           "
+          >PROFILE</ion-item
+        ></ion-col
+      >
+
+      <ion-col
+        ><ion-item class="button" (click)="navigate('search')"
+          >SEARCH TITLE</ion-item
+        ></ion-col
+      >
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-item class="button" (click)="navigate('friends')"
+          >FRIENDS</ion-item
+        >
+      </ion-col>
+
+      <ion-col>
+        <ion-item class="button" (click)="navigateToFavourites()"
           >FAVOURITES</ion-item
         ></ion-col
       >
     </ion-row>
+
     <ion-row>
       <ion-col
-        ><ion-item
-          class="button"
-          (click)="navigateToProfile('profile', getCurrentUserEmail())"
-          >PROFILE</ion-item
-        ></ion-col
+        ><ion-item class="button" (click)="logout()">Logout</ion-item></ion-col
       >
-      <ion-col
-        ><ion-item class="button" (click)="navigate('friends')"
-          >FRIENDS</ion-item
-        ></ion-col
-      ></ion-row
-    >
-    <ion-row>
-      <ion-col
-        ><ion-item class="button" (click)="logout()">logout</ion-item></ion-col
-      >
-      <ion-col> <ion-item (click)="goBack()"> back</ion-item></ion-col>
+      <ion-col>
+        <ion-item (click)="navigateToDetail()">View Popular Title</ion-item>
+      </ion-col>
     </ion-row>
   </ion-grid>
 </ion-footer>

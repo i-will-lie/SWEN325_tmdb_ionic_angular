@@ -46,8 +46,6 @@ export class SearchService {
 
     return this.result;
   }
-  //https://api.themoviedb.org/3/movie/506574?api_key=79ad210fe32318cf14cfeb7de2cb26fa&language=en-US
-  //https://api.themoviedb.org/3/movies/506574?api_key=79ad210fe32318cf14cfeb7de2cb26fa&language=en-US
   getDetails(type, id) {
     console.log("gettting details");
     console.log(

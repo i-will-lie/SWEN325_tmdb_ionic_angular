@@ -10,6 +10,7 @@ import {
   NavController
 } from "@ionic/angular";
 import { ActivatedRoute, Router } from "@angular/router";
+import { SessionService } from "../../services/session.service";
 
 @Component({
   selector: "app-profile",
@@ -19,7 +20,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 export class ProfilePage implements OnInit {
   constructor(
     private userDbService: UserDatabaseService,
-    private alert: AlertController,
+    private alertCtrl: AlertController,
     private activatedRoute: ActivatedRoute,
     private friendsServ: FriendsService,
     private authServ: AuthenticationService,
@@ -28,22 +29,24 @@ export class ProfilePage implements OnInit {
     private favouriteServ: FavouritesService,
     public menu: MenusService,
     private asCtrl: ActionSheetController,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private sessionServ: SessionService
   ) {}
 
   dbUserInfo;
-  userName;
+  //username;
   email;
   tmdbUser;
   tmdbAccId;
   tmdbFavId;
   friends;
-
+  alert;
   message;
 
   profile;
   async ngOnInit() {
     let email = await this.activatedRoute.snapshot.paramMap.get("email");
+    let username = await this.activatedRoute.snapshot.paramMap.get("username");
     console.log("EMFDSF", email);
     // this.friendsServ.getProfile(email).subscribe(result => {
     //   this.profile = result;
@@ -55,7 +58,7 @@ export class ProfilePage implements OnInit {
       .getProfile(email)
       .subscribe(res => {
         console.log("pppppppppppp,", res);
-        this.userName = res["username"];
+        //this.username = res["username"];
         this.email = res["fbUser"]["email"];
         this.tmdbUser = res["tmdbUser"]["username"];
         this.tmdbAccId = res["tmdbUser"]["accountID"];
@@ -64,7 +67,7 @@ export class ProfilePage implements OnInit {
         console.log(
           "email",
           this.email,
-          this.userName,
+          this.tmdbUser,
           res["favourites"],
           this.tmdbFavId
         );
@@ -88,9 +91,9 @@ export class ProfilePage implements OnInit {
     //   this.userDbService.dbUser
     // );
   }
-  getDbUser() {
-    return this.userDbService.getDbUser();
-  }
+  // getDbUser() {
+  //   return this.userDbService.getDbUser();
+  // }
 
   // editText() {
   //   console.log("edit pressed");
@@ -112,7 +115,7 @@ export class ProfilePage implements OnInit {
         {
           name: "message",
           type: "text",
-          placeholder: this.userName
+          placeholder: this.tmdbUser
         }
       ],
       buttons: [
@@ -140,16 +143,25 @@ export class ProfilePage implements OnInit {
   }
 
   addFriend(email, username, accountID, favouriteID) {
+    if (this.sessionServ.email == email) {
+      this.menu.presentAlert("You can't friend YOURSELF!!!");
+      return;
+    }
     console.log("profile page add friend", email, username, accountID);
     this.friendServ.addFriend(email, username, accountID, favouriteID);
   }
 
   removeFriend(email) {
+    if (this.sessionServ.email == email) {
+      this.menu.presentAlert("You can't remove YOURSELF!!!");
+      return;
+    }
+
     this.friendServ.removeFriend(email);
   }
 
   getCurrentEmail() {
-    return this.authServ.getEmail();
+    return this.sessionServ.email;
   }
 
   haveFriend() {
@@ -187,7 +199,7 @@ export class ProfilePage implements OnInit {
           handler: () => {
             this.addFriend(
               this.email,
-              this.userName,
+              this.tmdbUser,
               this.tmdbAccId,
               this.tmdbFavId
             );
@@ -197,9 +209,21 @@ export class ProfilePage implements OnInit {
         {
           text: "Remove Friend",
           icon: "remove",
-          handler: () => {
-            this.removeFriend(this.email);
-            this.menu.presentToast("Removed friend " + this.email);
+          handler: async () => {
+            this.alert = await this.alertCtrl.create({
+              message: "Do you wish to leave?",
+              buttons: [
+                {
+                  text: "Remove",
+                  handler: () => {
+                    this.removeFriend(this.email);
+                    this.menu.presentToast("Removed friend " + this.email);
+                  }
+                },
+                { text: "Keep", role: "cancel" }
+              ]
+            });
+            this.alert.present();
           }
         },
         {},
@@ -215,4 +239,5 @@ export class ProfilePage implements OnInit {
   goBack() {
     this.navCtrl.pop();
   }
+  async confrimRemove() {}
 }

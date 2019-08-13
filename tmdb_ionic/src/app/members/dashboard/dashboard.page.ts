@@ -1,4 +1,3 @@
-import { SearchPage } from "./../search/search.page";
 import { FavouritesService } from "./../../services/favourites.service";
 import { SessionService } from "./../../services/session.service";
 import { UserDatabaseService } from "./../../services/user-database.service";
@@ -13,9 +12,13 @@ import { SearchService } from "../../search.service";
   templateUrl: "./dashboard.page.html",
   styleUrls: ["./dashboard.page.scss"]
 })
+/**
+ * The main landing page of the app accting as the hub. Displays popular title.
+ */
 export class DashboardPage implements OnInit {
-  favouriteListID;
-  actionSheet;
+  randomItem; //the randomly pick title to display
+  popular; //list of popular titles from tmdb
+
   constructor(
     private authService: AuthenticationService,
     private router: Router,
@@ -23,33 +26,30 @@ export class DashboardPage implements OnInit {
     private sessionServ: SessionService,
     private favouriteServ: FavouritesService,
     public asCtrl: ActionSheetController,
-    private searchServ: SearchService,
-    private navCtrl: NavController
+    private searchServ: SearchService
   ) {}
 
-  randomItem;
-  popular;
+  /**
+   * On initialisation find and set the favourite service to track the user.
+   * Get the list of popular titles from tmdb and randomly display one.
+   */
   async ngOnInit() {
-    console.log("DASHING", this.sessionServ.email);
     this.favouriteServ.setCurrentUser(this.sessionServ.email);
     this.searchServ.getPopular().then(res => {
-      console.log("RRRRRRRRRRRR", res);
       this.popular = res["results"];
-      console.log("gotRESR");
       this.getRandomMovie();
     });
-
-    // await this.userDbServ.dbUser.toPromise().then(res => {
-    //   console.log("FAV", res["favourites"], this.sessionServ.email);
-    //   this.favouriteListID = res["favourites"];
-
-    // });
   }
 
+  /**
+   * Get a random title from the popular list.
+   */
   getRandomMovie() {
+    //generate a index number to choose from the popular list
     const index = this.searchServ.generateNumber(this.popular.length);
-    const item = this.popular[index]["id"];
-    console.log("res", item);
+    const item = this.popular[index]["id"]; //ID of the title
+
+    //retrieve item to present it
     this.searchServ
       .getDetails("movie", item)
       .toPromise()
@@ -57,6 +57,12 @@ export class DashboardPage implements OnInit {
         this.randomItem = res;
       });
   }
+  /**
+   * Navigate to the given page of members.
+   * Doesn't include profile or favourites.
+   *
+   * @param newPage:string
+   */
   async navigate(newPage) {
     this.router.navigate(["members", newPage]);
 
@@ -64,20 +70,18 @@ export class DashboardPage implements OnInit {
     //this.router.navigate(["members", "search"]);
   }
 
-  navigateToProfile(newPage, profile) {
-    this.router.navigate(["members", newPage, profile]);
+  navigateToProfile(newPage: string, profile: string, username: string) {
+    this.router.navigate(["members", newPage, profile, username]);
   }
-  navigateToFavourite(newPage, accountId, username, listId) {
-    console.log(
-      "BLAH",
-      newPage,
-      this.favouriteServ.tmdbAccId,
-      this.favouriteServ.tmdbUser,
-      this.favouriteServ.tmdbFavId
-    );
+
+  /**
+   * Navigate to the favourites page of the app user
+   * using their details as path.
+   */
+  navigateToFavourites() {
     this.router.navigate([
       "members",
-      newPage,
+      "favourites",
       this.favouriteServ.tmdbAccId,
       this.favouriteServ.tmdbUser,
       this.favouriteServ.tmdbFavId
@@ -88,9 +92,9 @@ export class DashboardPage implements OnInit {
   }
   logout() {
     console.log("OUT");
-    this.authService.fbLogut();
-    this.userDbServ.dbLogout(this.sessionServ.email);
-    this.router.navigate([""]);
+    this.authService.logout();
+    // this.userDbServ.dbLogout(this.sessionServ.email);
+    // this.router.navigate([""]);
   }
 
   getCurrentUserEmail() {
@@ -107,7 +111,7 @@ export class DashboardPage implements OnInit {
     return this.userDbServ.favouriteListID;
   }
 
-  goBack() {
-    this.navCtrl.pop();
-  }
+  // goBack() {
+  //   this.navCtrl.pop();
+  // }
 }
