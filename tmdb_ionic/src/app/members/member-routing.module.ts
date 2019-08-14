@@ -27,7 +27,7 @@ const routes: Routes = [
     loadChildren: "./detail/detail.module#DetailPageModule"
   },
   {
-    path: "favourites/:accId/:username/:listID",
+    path: "favourites/:accId/:username/:listId",
     loadChildren: "./favourites/favourites.module#FavouritesPageModule"
   },
   {

@@ -45,16 +45,17 @@ export class FavouritesPage implements OnInit {
     this.currentUserID = await parseInt(
       this.activatedRoute.snapshot.paramMap.get("accId")
     );
-    this.favouriteListID = parseInt(
+    this.favouriteListID = await parseInt(
       this.activatedRoute.snapshot.paramMap.get("listId")
     );
-    if (this.currentUserID == this.sessionServ.accountID) {
+    if (this.currentUserID == (await this.sessionServ.accountID)) {
       this.currentUsername = "Your";
     } else {
       this.currentUsername = await this.activatedRoute.snapshot.paramMap.get(
         "username"
       );
     }
+    console.log("ONE", this.favouriteListID);
     this.setFavourites();
   }
 
@@ -62,8 +63,10 @@ export class FavouritesPage implements OnInit {
    * Get then assign the favourites list of current user to field.
    */
   async setFavourites() {
+    console.log("TWO", this.favouriteListID);
     this.favouritesResult = await this.favouriteServ.getFavourites(
-      this.favouriteServ.currentTmdbFavId
+      //this.favouriteServ.currentTmdbFavId
+      this.favouriteListID
     );
   }
 

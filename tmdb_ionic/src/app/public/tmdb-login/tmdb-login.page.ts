@@ -142,7 +142,7 @@ export class TmdbLoginPage implements OnInit {
       this.sessionServ.email,
       this.sessionServ.sessionID
     );
-
+    this.userDbServ.setFavListID();
     this.authComplete();
   }
 

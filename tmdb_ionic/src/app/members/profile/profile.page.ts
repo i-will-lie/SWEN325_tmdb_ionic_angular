@@ -164,13 +164,21 @@ export class ProfilePage implements OnInit {
    * Navigate to favourites page of current profile user.
    */
   gotoFavourites() {
-    let fav = this.favouriteServ.currentTmdbFavId;
+    //let fav = this.favouriteServ.currentTmdbFavId;
+    console.log(
+      "p to f",
+      "members",
+      "favourites",
+      this.currentTmdbAccId, //this.favouriteServ.currentTmdbAccId,
+      this.currentTmdbUser, //this.favouriteServ.currentTmdbUser,
+      this.currentTmdbFavId
+    );
     this.router.navigate([
       "members",
       "favourites",
-      this.favouriteServ.currentTmdbAccId,
-      this.favouriteServ.currentTmdbUser,
-      fav
+      this.currentTmdbAccId, //this.favouriteServ.currentTmdbAccId,
+      this.currentTmdbUser, //this.favouriteServ.currentTmdbUser,
+      this.currentTmdbFavId //fav
     ]);
   }
 

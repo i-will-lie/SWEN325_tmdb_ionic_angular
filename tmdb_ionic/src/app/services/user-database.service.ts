@@ -170,7 +170,7 @@ export class UserDatabaseService {
   setFavListID() {
     this.favSub = this.firestore
       .collection("UserInfo")
-      .doc()
+      .doc(this.sessionServ.email)
       .valueChanges()
       .subscribe(res => {
         console.log("FAV res", res["favourites"]);

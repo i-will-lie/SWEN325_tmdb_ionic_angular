@@ -1,3 +1,4 @@
+import { UserDatabaseService } from "./user-database.service";
 import { FavouritesService } from "./favourites.service";
 import { SessionService } from "./session.service";
 import { Injectable } from "@angular/core";
@@ -28,7 +29,8 @@ export class MenusService {
     private authServ: AuthenticationService,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
-    private loadCtrl: LoadingController
+    private loadCtrl: LoadingController,
+    private userDbServ: UserDatabaseService
   ) {}
   /**
    * ActionSheet used as main navigation menu in app.
@@ -69,14 +71,17 @@ export class MenusService {
           {
             text: "Favourites",
             icon: "heart",
-            handler: () => {
-              this.favouriteServ.setCurrentUser(this.sessionServ.email);
+            handler: async () => {
+              await this.favouriteServ.setCurrentUser(this.sessionServ.email);
               this.router.navigate([
                 "members",
                 "favourites",
+                // this.sessionServ.accountID,
+                // this.sessionServ.username,
+                // this.favouriteServ.currentTmdbFavId
                 this.sessionServ.accountID,
                 this.sessionServ.username,
-                this.favouriteServ.currentTmdbFavId
+                this.userDbServ.favouriteListID
               ]);
             }
           },

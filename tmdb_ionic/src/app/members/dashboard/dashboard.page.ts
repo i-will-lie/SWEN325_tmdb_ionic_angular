@@ -1,3 +1,4 @@
+import { UserDatabaseService } from "./../../services/user-database.service";
 import { FavouritesService } from "./../../services/favourites.service";
 import { SessionService } from "./../../services/session.service";
 import { AuthenticationService } from "./../../services/authentication.service";
@@ -24,7 +25,8 @@ export class DashboardPage implements OnInit {
     private sessionServ: SessionService,
     private favouriteServ: FavouritesService,
     public asCtrl: ActionSheetController,
-    private searchServ: SearchService
+    private searchServ: SearchService,
+    private userDbServ: UserDatabaseService
   ) {}
 
   /**
@@ -86,9 +88,13 @@ export class DashboardPage implements OnInit {
     this.router.navigate([
       "members",
       "favourites",
-      this.favouriteServ.currentTmdbAccId,
-      this.favouriteServ.currentTmdbUser,
-      this.favouriteServ.currentTmdbFavId
+      // this.favouriteServ.currentTmdbAccId,
+      // this.favouriteServ.currentTmdbUser,
+      // this.favouriteServ.currentTmdbFavId
+      this.sessionServ.accountID,
+      this.sessionServ.username,
+      this.userDbServ.favouriteListID
+      //this.sessionServ.favouriteListID
     ]);
   }
   /**
