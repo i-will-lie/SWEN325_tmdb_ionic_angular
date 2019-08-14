@@ -12,7 +12,7 @@
   ></ion-searchbar>
 
   <ion-item>
-    <ion-label>Select Ssearchtype</ion-label>
+    <ion-label>Select Search Type</ion-label>
     <ion-select
       [(ngModel)]="type"
       debounce="500"
@@ -27,7 +27,7 @@
   <ion-list>
     <ion-item
       button
-      *ngFor="let item of results | async"
+      *ngFor="let item of searchResults | async"
       [routerLink]="['/', 'members', 'detail', item.id, type]"
     >
       <ion-thumbnail
@@ -42,15 +42,6 @@
         <ion-label>{{ item.vote_average }}</ion-label>
       </ion-list>
     </ion-item>
-    <!-- http://localhost:8100/getImage(item.poster_path) -->
-    <!--<ion-item
-      button
-      *ngFor="let item of results | async"
-      [routerLink]="['/movies/', item.id]"
-      click="gotoItem(, item)"
-    >
-      {{ item.title }}
-    </ion-item>-->
   </ion-list>
 </ion-content>
 <ion-footer>

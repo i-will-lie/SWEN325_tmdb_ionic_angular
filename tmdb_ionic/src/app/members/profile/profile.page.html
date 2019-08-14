@@ -1,28 +1,28 @@
 <ion-header>
   <ion-toolbar>
     <ion-back-button></ion-back-button>
-    <ion-title>{{ tmdbUser }}'s Profile</ion-title>
+    <ion-title>{{ currentTmdbUser }}'s Profile</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <ion-card>
-    <ion-card-subtitle *ngIf="email == getCurrentEmail()"
+    <ion-card-subtitle *ngIf="currentEmail == getCurrentEmail()"
       >This is You</ion-card-subtitle
     >
     <ion-card-content *ngIf="this.dbUserInfo">
-      <ion-item> <ion-label> Email </ion-label>{{ email }} </ion-item>
+      <ion-item> <ion-label> Email </ion-label>{{ currentEmail }} </ion-item>
       <ion-item>
-        <ion-label> TMDB Username </ion-label>{{ tmdbUser }}
+        <ion-label> TMDB Username </ion-label>{{ currentTmdbUser }}
       </ion-item>
       <ion-item>
-        <ion-label> TMDB Acc. ID </ion-label>{{ tmdbAccId }}
+        <ion-label> TMDB Acc. ID </ion-label>{{ currentTmdbAccId }}
       </ion-item>
     </ion-card-content>
   </ion-card>
-  <ion-item *ngIf="email == getCurrentEmail()" (click)="showEditForm()"
+  <ion-item *ngIf="currentEmail == getCurrentEmail()" (click)="showEditForm()"
     >EDIT Your Message </ion-item
-  ><ion-card>{{ message }}</ion-card>
+  ><ion-card>{{ currentMessage }}</ion-card>
 </ion-content>
 <ion-footer>
   <ion-grid>

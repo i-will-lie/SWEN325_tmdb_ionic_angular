@@ -1,6 +1,5 @@
 import { MenusService } from "./../../services/menus.service";
 import { FavouritesService } from "./../../services/favourites.service";
-import { AuthenticationService } from "./../../services/authentication.service";
 import { FriendsService } from "./../../services/friends.service";
 import { Component, OnInit } from "@angular/core";
 import { UserDatabaseService } from "./../../services/user-database.service";
@@ -18,7 +17,7 @@ import { SessionService } from "../../services/session.service";
   styleUrls: ["./profile.page.scss"]
 })
 /**
- * Displays profile of the currentlyh selected user
+ * Displays profile of the currentlyh selected user. Provides functionality
  */
 export class ProfilePage implements OnInit {
   constructor(
@@ -26,7 +25,6 @@ export class ProfilePage implements OnInit {
     private alertCtrl: AlertController,
     private activatedRoute: ActivatedRoute,
     private friendsServ: FriendsService,
-    private authServ: AuthenticationService,
     public friendServ: FriendsService,
     private router: Router,
     private favouriteServ: FavouritesService,
@@ -36,89 +34,54 @@ export class ProfilePage implements OnInit {
     private sessionServ: SessionService
   ) {}
 
-  dbUserInfo;
-  //username;
-  email;
-  tmdbUser;
-  tmdbAccId;
-  tmdbFavId;
-  friends;
-  alert;
-  message;
+  dbUserInfo; //currently displayed user
+  currentEmail; //email of current user
+  currentTmdbUser; //username of current user
+  currentTmdbAccId; //account id of current user
+  currentTmdbFavId; //favourite list id of current user
+  currentFriends; //friends of current user
+  currentMessage; //message written on profile
 
-  profile;
-  async ngOnInit() {
+  alert; //for presenting alerts
+
+  /**
+   * On Init subscribe to database to get profile details of current user.
+   */ async ngOnInit() {
     let email = await this.activatedRoute.snapshot.paramMap.get("email");
-    let username = await this.activatedRoute.snapshot.paramMap.get("username");
-    console.log("EMFDSF", email);
-    // this.friendsServ.getProfile(email).subscribe(result => {
-    //   this.profile = result;
-    //   console.log("new deatil", result);
-    // });
 
+    //subscribe set set fields
     this.favouriteServ.setCurrentUser(email);
     this.dbUserInfo = await this.friendsServ
       .getProfile(email)
       .subscribe(res => {
-        console.log("pppppppppppp,", res);
-        //this.username = res["username"];
-        this.email = res["fbUser"]["email"];
-        this.tmdbUser = res["tmdbUser"]["username"];
-        this.tmdbAccId = res["tmdbUser"]["accountID"];
-        this.tmdbFavId = res["favourites"];
-        this.message = res["message"];
+        this.currentEmail = res["fbUser"]["email"];
+        this.currentTmdbUser = res["tmdbUser"]["username"];
+        this.currentTmdbAccId = res["tmdbUser"]["accountID"];
+        this.currentTmdbFavId = res["favourites"];
+        this.currentMessage = res["message"];
         console.log(
           "email",
-          this.email,
-          this.tmdbUser,
+          this.currentEmail,
+          this.currentTmdbUser,
           res["favourites"],
-          this.tmdbFavId
+          this.currentTmdbFavId
         );
-        console.log(this.userDbService.dbInfo);
       });
-
-    // console.log("un", dbUserInfo["username"]);
-    // this.userName = dbUserInfo["username"];
-    // this.email = dbUserInfo["fbUser"]["email"];
-    // this.tmdbUser = dbUserInfo["tmdbUser"]["username"];
-    // this.tmdbAccId = dbUserInfo["tmdbUser"]["accountID"];
-    // console.log("email", this.email);
-    // console.log(this.userDbService.dbInfo);
   }
 
-  checkdb() {
-    console.log("click pro button");
-    // console.log(
-    //   "dbservice",
-    //   this.userDbService.dbInfo,
-    //   this.userDbService.dbUser
-    // );
-  }
-  // getDbUser() {
-  //   return this.userDbService.getDbUser();
-  // }
-
-  // editText() {
-  //   console.log("edit pressed");
-  //   {
-  //     if (this.editingText) {
-  //       this.editingText = false;
-  //     }
-  //     {
-  //       this.editingText = true;
-  //     }
-  //   }
-
-  //   //
-  // }
+  /**
+   * Display the form to edit profile message.
+   * Only available if current user is app user.
+   */
   async showEditForm() {
-    const alert = await this.alert.create({
+    console.log("fsdfsd");
+    const alert = await this.alertCtrl.create({
       header: "Edit your message",
       inputs: [
         {
           name: "message",
           type: "text",
-          placeholder: this.tmdbUser
+          placeholder: this.currentMessage
         }
       ],
       buttons: [
@@ -135,29 +98,48 @@ export class ProfilePage implements OnInit {
           handler: data => {
             console.log("nw", data);
             this.userDbService
-              .updateMessage(this.email, data.message)
+              .updateMessage(this.currentEmail, data.message)
               .then(() => this.ngOnInit());
           }
         }
       ]
     });
-
     await alert.present();
   }
 
-  addFriend(email, username, accountID, favouriteID) {
+  /**
+   * Add user using provided details
+   * as friend if not already one or is self.
+   * Present a toast if successful or alert if fail.
+   *
+   * @param email :string
+   * @param username :string
+   * @param accountID :String
+   * @param favouriteID :string
+   */
+  addFriend(
+    email: string,
+    username: string,
+    accountID: string | number,
+    favouriteID: string | number
+  ) {
     if (this.sessionServ.email == email) {
       this.menu.presentAlert("You can't friend YOURSELF!!!");
       return;
     }
-    console.log("profile page add friend", email, username, accountID);
+
     if (this.friendServ.addFriend(email, username, accountID, favouriteID)) {
-      this.menu.presentToast("Added friend " + this.email);
+      this.menu.presentToast("Added friend " + this.currentEmail);
     } else {
       this.menu.presentAlert(username + " is already a friend");
     }
   }
-
+  /**
+   * Remove user of provided email as friend
+   * if not already removed or is self.
+   * Present a toast if successful or alert if fail.
+   * @param email
+   */
   removeFriend(email) {
     if (this.sessionServ.email == email) {
       this.menu.presentAlert("You can't remove YOURSELF!!!");
@@ -165,30 +147,37 @@ export class ProfilePage implements OnInit {
     }
 
     if (this.friendServ.removeFriend(email)) {
-      this.menu.presentToast("Removed friend " + this.email);
+      this.menu.presentToast("Removed friend " + this.currentEmail);
     } else {
-      this.menu.presentAlert(this.tmdbUser + " is not a friend");
+      this.menu.presentAlert(this.currentTmdbUser + " is not a friend");
     }
   }
 
+  /**
+   * Get the email of app user.
+   */
   getCurrentEmail() {
     return this.sessionServ.email;
   }
 
+  /**
+   * Navigate to favourites page of current profile user.
+   */
   gotoFavourites() {
     let fav = this.favouriteServ.tmdbFavId;
-    console.log("p ro f", "members", "favourites", this.tmdbAccId, fav);
-    this.router
-      .navigate([
-        "members",
-        "favourites",
-        this.favouriteServ.tmdbAccId,
-        this.favouriteServ.tmdbUser,
-        fav
-      ])
-      .then(res => console.log(res));
+    this.router.navigate([
+      "members",
+      "favourites",
+      this.favouriteServ.tmdbAccId,
+      this.favouriteServ.tmdbUser,
+      fav
+    ]);
   }
 
+  /**
+   * Show current actions available on page
+   * to manage friends.
+   */
   async showActions() {
     const actionSheet = await this.asCtrl.create({
       header: "Manage your friend",
@@ -205,10 +194,10 @@ export class ProfilePage implements OnInit {
           icon: "add",
           handler: () => {
             this.addFriend(
-              this.email,
-              this.tmdbUser,
-              this.tmdbAccId,
-              this.tmdbFavId
+              this.currentEmail,
+              this.currentTmdbUser,
+              this.currentTmdbAccId,
+              this.currentTmdbFavId
             );
           }
         },
@@ -217,12 +206,12 @@ export class ProfilePage implements OnInit {
           icon: "remove",
           handler: async () => {
             this.alert = await this.alertCtrl.create({
-              message: "Do you wish to remove " + this.tmdbUser + "?",
+              message: "Do you wish to remove " + this.currentTmdbUser + "?",
               buttons: [
                 {
                   text: "Remove",
                   handler: () => {
-                    this.removeFriend(this.email);
+                    this.removeFriend(this.currentEmail);
                   }
                 },
                 { text: "Keep", role: "cancel" }
@@ -241,8 +230,11 @@ export class ProfilePage implements OnInit {
 
     await actionSheet.present();
   }
+
+  /**
+   * Go back to previous page.
+   */
   goBack() {
     this.navCtrl.pop();
   }
-  async confrimRemove() {}
 }

@@ -1,16 +1,10 @@
-import { MenusService } from "./menus.service";
-import { List } from "./../models/list";
 import { SessionService } from "./session.service";
-import { FavouriteType } from "./../members/favourites/favourites.page";
 import { HttpClient } from "@angular/common/http";
 import { tmdb } from "./../../environments/environment";
-import { OnInit } from "@angular/core";
 import { UserDatabaseService } from "./user-database.service";
 import { Injectable } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { AuthenticationService } from "../services/authentication.service";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root"
@@ -27,7 +21,6 @@ export class FavouritesService {
 
   ratingsMovies;
   constructor(
-    private userDbServ: UserDatabaseService,
     private afStore: AngularFirestore,
     private http: HttpClient,
     private auth: AuthenticationService,
@@ -169,36 +162,17 @@ export class FavouritesService {
         this.sessionServ.sessionID
       }&language=en-US&page=1`
     );
-    let res = await this.http
-      .get(
-        `${tmdb.tmdbAPI.url}account/${
-          this.sessionServ.accountID
-        }/rated/movies?api_key=${tmdb.tmdbAPI.apiKey}&session_id=${
-          this.sessionServ.sessionID
-        }&language=en-US&page=1`
-      )
-      .subscribe(res => (this.ratedMovies = res["results"]));
     //   .toPromise();
     // this.ratedMovies = res["results"];
     // console.log(res["results"]);
   }
 
   async setRatedTV() {
-    let res = await this.http
-      .get(
-        `${tmdb.tmdbAPI.url}account/${
-          this.sessionServ.accountID
-        }/rated/tv?api_key=${tmdb.tmdbAPI.apiKey}&session_id=${
-          this.sessionServ.sessionID
-        }&language=en-US&page=1`
-      )
-      .subscribe(res => (this.ratedTV = res["results"]));
     //   .toPromise();
     // this.ratedTV = res["results"];
   }
 
-  async getMovieRating(itemType, itemID) {
-    var rating = -1;
+  async getMovieRating(itemID) {
     return await this.http
       .get(
         `${tmdb.tmdbAPI.url}account/${

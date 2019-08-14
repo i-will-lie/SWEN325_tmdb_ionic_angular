@@ -1,26 +1,24 @@
+import { tmdb } from "./../../environments/environment";
 import { UserDatabaseService } from "./user-database.service";
 import { User } from "../models/user";
-
 import { TmdbUser } from "./../models/tmdbUser";
-
-import { Platform, ToastController, AlertController } from "@ionic/angular";
+import { ToastController, AlertController } from "@ionic/angular";
 import { Injectable } from "@angular/core";
-import { Storage } from "@ionic/storage";
-
 import { AngularFireAuth } from "@angular/fire/auth";
 import "../models/fbUser";
 import { FbUser } from "../models/fbUser";
 import { HttpClient } from "@angular/common/http";
-
-import { AngularFireDatabase } from "angularfire2/database";
 import { Router } from "@angular/router";
 
-const tmdbURL = "https://api.themoviedb.org/3/";
-const tmdbAPI = "79ad210fe32318cf14cfeb7de2cb26fa";
+const tmdbURL = tmdb.tmdbAPI.url;
+const tmdbAPI = tmdb.tmdbAPI.apiKey;
 
 @Injectable({
   providedIn: "root"
 })
+/**
+ * Provides authenticating services for the user.
+ */
 export class AuthenticationService {
   fbUser: FbUser; //current fb user object
   tmdbUser: TmdbUser; //current tmdb user object
@@ -32,15 +30,12 @@ export class AuthenticationService {
   toast;
   alert;
 
-  //private forgotEmail;
-  tmdbAuthenticated = false;
+  tmdbAuthenticated = false; //flag to track state of tmdb authentication
+
   constructor(
-    private storage: Storage,
-    private plt: Platform,
     private afAuth: AngularFireAuth,
     private toastCtrl: ToastController,
     private http: HttpClient,
-    private afDatabase: AngularFireDatabase,
     private userDbService: UserDatabaseService,
     private alertCtrl: AlertController,
     private router: Router
@@ -139,6 +134,7 @@ export class AuthenticationService {
   }
 
   /**
+   *Add
    *
    * @param tmdbUsername
    * @param tmdbPassword
@@ -154,17 +150,13 @@ export class AuthenticationService {
       password: tmdbPassword,
       accountID: tmdbAccountID
     };
-    //this.currentTmdbAccID = tmdbAccountID;
 
-    console.log("adding user", this.fbUser.email, newTmdbUser);
     this.userDbService.addTmdbUser(this.fbUser.email, newTmdbUser);
   }
 
   tmdbAddSession() {
     console.log("+s", this.fbUser.email, this.currentSessionID);
     this.userDbService.addTmdbSession(this.fbUser.email, this.currentSessionID);
-    console.log("subscribe next");
-    //this.userDbService.connectToDb(this.fbUser.email);
   }
 
   async tmdbRequestToken() {
@@ -284,7 +276,7 @@ export class AuthenticationService {
   resetPassword(email: string) {
     this.afAuth.auth
       .sendPasswordResetEmail(email)
-      .then(res => {
+      .then(() => {
         this.presentToast("Password Reset sent: " + email);
       })
       .catch(error => this.presentAlert(error));

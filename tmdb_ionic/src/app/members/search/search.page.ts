@@ -1,9 +1,8 @@
 import { MenusService } from "./../../services/menus.service";
 import { SearchType, SearchService } from "./../../search.service";
-import { Component, OnInit, inject } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 
-import { Router } from "@angular/router";
 import { NavController } from "@ionic/angular";
 
 export enum FavouriteType {
@@ -16,30 +15,36 @@ export enum FavouriteType {
   templateUrl: "./search.page.html",
   styleUrls: ["./search.page.scss"]
 })
+/**
+ * Page to search for movies or tv titles by name.
+ */
 export class SearchPage implements OnInit {
-  results: Observable<any>;
+  searchResults: Observable<any>;
   searchTerm: string = "";
   type: SearchType = SearchType.movie;
   selecteditem = null;
   constructor(
     private searchService: SearchService,
-    private router: Router,
     private navCtrl: NavController,
     public menu: MenusService
   ) {}
 
   ngOnInit() {}
 
+  /**
+   * Search for title when input field has been changed.
+   * Update field with results.
+   */
   searchChanged() {
-    this.results = this.searchService.searchData(this.searchTerm, this.type);
-    console.log("fdsfds", this.results);
-    //this.results.subscribe(res => {    })
+    this.searchResults = this.searchService.searchData(
+      this.searchTerm,
+      this.type
+    );
   }
 
-  getImage(path: string) {
-    //this.searchService.getImage(path);
-  }
-
+  /**
+   * Go back to previous page.
+   */
   goBack() {
     this.navCtrl.pop();
   }
