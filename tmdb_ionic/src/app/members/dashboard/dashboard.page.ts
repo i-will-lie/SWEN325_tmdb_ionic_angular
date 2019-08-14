@@ -1,6 +1,5 @@
 import { FavouritesService } from "./../../services/favourites.service";
 import { SessionService } from "./../../services/session.service";
-import { UserDatabaseService } from "./../../services/user-database.service";
 import { AuthenticationService } from "./../../services/authentication.service";
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
@@ -22,7 +21,6 @@ export class DashboardPage implements OnInit {
   constructor(
     private authService: AuthenticationService,
     private router: Router,
-    private userDbServ: UserDatabaseService,
     private sessionServ: SessionService,
     private favouriteServ: FavouritesService,
     public asCtrl: ActionSheetController,
@@ -63,15 +61,21 @@ export class DashboardPage implements OnInit {
    *
    * @param newPage:string
    */
-  async navigate(newPage) {
+  async navigate(newPage: string) {
     this.router.navigate(["members", newPage]);
-
-    //this.router.navigate(["members", "profile"]);
-    //this.router.navigate(["members", "search"]);
   }
 
-  navigateToProfile(newPage: string, profile: string, username: string) {
-    this.router.navigate(["members", newPage, profile, username]);
+  /**
+   * Navigate to the profile page of the app user
+   * using their details as path.
+   */
+  navigateToProfile() {
+    this.router.navigate([
+      "members",
+      "profile",
+      this.sessionServ.email,
+      this.sessionServ.username
+    ]);
   }
 
   /**
@@ -87,31 +91,24 @@ export class DashboardPage implements OnInit {
       this.favouriteServ.tmdbFavId
     ]);
   }
+  /**
+   * Navigate to the details page of presented title.
+   */
   navigateToDetail() {
     this.router.navigate(["members", "detail", this.randomItem["id"], "movie"]);
   }
-  logout() {
-    console.log("OUT");
-    this.authService.logout();
-    // this.userDbServ.dbLogout(this.sessionServ.email);
-    // this.router.navigate([""]);
-  }
 
-  getCurrentUserEmail() {
-    return this.sessionServ.email;
-  }
-  getCurrentAccId() {
-    return this.sessionServ.accountID;
-  }
+  /**
+   * Returns the username of the app user.
+   */
   getCurrentUsername() {
     return this.sessionServ.username;
   }
 
-  getCurrentListID() {
-    return this.userDbServ.favouriteListID;
+  /**
+   * Initialise logut, providing a prompt.
+   */
+  logout() {
+    this.authService.logout();
   }
-
-  // goBack() {
-  //   this.navCtrl.pop();
-  // }
 }

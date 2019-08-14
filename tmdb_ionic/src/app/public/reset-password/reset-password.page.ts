@@ -11,9 +11,7 @@ export class ResetPasswordPage implements OnInit {
   resetEmail: string;
   constructor(private authServ: AuthenticationService) {}
 
-  ngOnInit() {
-    this.resetEmail = this.authServ.getForgotEmail();
-  }
+  ngOnInit() {}
 
   resetPassword() {
     this.authServ.resetPassword(this.resetEmail);

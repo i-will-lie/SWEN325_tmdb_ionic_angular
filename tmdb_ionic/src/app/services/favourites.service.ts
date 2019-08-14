@@ -1,3 +1,4 @@
+import { MenusService } from "./menus.service";
 import { List } from "./../models/list";
 import { SessionService } from "./session.service";
 import { FavouriteType } from "./../members/favourites/favourites.page";
@@ -65,32 +66,8 @@ export class FavouritesService {
       });
   }
 
-  initFavServ() {
-    // this.afStore
-    //   .collection("UserInfo")
-    //   .doc(this.sessionServ.email)
-    //   .valueChanges()
-    //   .subscribe(res => {
-    //     this.personalListID = res["favourites"];
-    //     if (res["favourites"] == null) {
-    //       console.log("IS NULL");
-    //       //this.initFavourites("favourites");
-    //     }
-    //   });
-  }
-
   async getFavourites(listID: string) {
     const sessionID = this.sessionServ.sessionID;
-
-    console.log(
-      sessionID,
-      listID,
-
-      "url",
-      `${tmdb.tmdbAPI.url}list/${listID}?api_key=${
-        tmdb.tmdbAPI.apiKey
-      }&session_id=${sessionID}&language=en-US&page=1`
-    );
 
     //api.themoviedb.org/3/account/{account_id}/lists?api_key=<<api_key>>&language=en-US&page=1
 
@@ -120,6 +97,12 @@ export class FavouritesService {
   }
 
   addToFavourites(itemID) {
+    console.log(
+      "ADD TO FAV",
+      `${tmdb.tmdbAPI.url}list/${this.tmdbFavId}/add_item?api_key=${
+        tmdb.tmdbAPI.apiKey
+      }&session_id=${this.sessionServ.sessionID}&language=en-US&page=1`
+    );
     return this.http
       .post(
         `${tmdb.tmdbAPI.url}list/${this.tmdbFavId}/add_item?api_key=${
@@ -128,7 +111,11 @@ export class FavouritesService {
         { media_id: parseInt(itemID) },
         { headers: { "Content-Type": "application/json;charset=utf-8" } }
       )
-      .toPromise();
+      .toPromise()
+      .catch(error => {
+        this.auth.presentAlert(error["error"]["status_message"]);
+        console.log("ERROR", error["error"]["status_message"]);
+      });
   }
 
   removeFromFavourites(listID, itemID) {

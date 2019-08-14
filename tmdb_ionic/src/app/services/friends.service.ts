@@ -56,8 +56,10 @@ export class FriendsService {
     return this.friendsDb;
   }
 
-  addFriend(email, username, accountID, favouriteID) {
-    console.log("addFirend", email, username, accountID, favouriteID);
+  addFriend(email, username, accountID, favouriteID): boolean {
+    if (this.haveFriend(email)) {
+      return false;
+    }
     const newFriend: Friend = {
       email: email,
       username: username,
@@ -68,11 +70,12 @@ export class FriendsService {
       console.log("c friend", []);
       this.updateFriends(newFriend);
     } else {
-      var friends = this.currentFriends.slice();
+      const friends = this.currentFriends.slice();
       friends.push(newFriend);
       console.log("c friend", friends);
       this.updateFriends(friends);
     }
+    return true;
   }
 
   getFriends() {
@@ -92,7 +95,12 @@ export class FriendsService {
       .update({ friends: newFriends });
   }
 
-  removeFriend(email) {
+  removeFriend(email): boolean {
+    //check if have friend
+    if (!this.haveFriend(email)) {
+      return false;
+    }
+
     //get current friends list
     const newFriends = this.currentFriends.filter(friend => {
       return friend["email"] != email;
@@ -104,6 +112,7 @@ export class FriendsService {
       .collection("UserInfo")
       .doc(this.sessionServ.email)
       .update({ friends: newFriends });
+    return true;
   }
 
   haveFriend(email) {

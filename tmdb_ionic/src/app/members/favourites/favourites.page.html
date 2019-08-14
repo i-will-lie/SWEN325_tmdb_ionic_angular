@@ -6,7 +6,7 @@
 
 <ion-content padding>
   <ion-list>
-    <ion-item *ngFor="let item of result">
+    <ion-item *ngFor="let item of favouritesResult">
       <ion-item
         button
         [routerLink]="['/', 'members', 'detail', item.id, favType]"

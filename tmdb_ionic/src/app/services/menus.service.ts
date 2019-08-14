@@ -65,6 +65,7 @@ export class MenusService {
             text: "Favourites",
             icon: "heart",
             handler: () => {
+              this.favouriteServ.setCurrentUser(this.sessionServ.email);
               this.router.navigate([
                 "members",
                 "favourites",

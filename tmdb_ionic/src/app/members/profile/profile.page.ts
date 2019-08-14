@@ -17,6 +17,9 @@ import { SessionService } from "../../services/session.service";
   templateUrl: "./profile.page.html",
   styleUrls: ["./profile.page.scss"]
 })
+/**
+ * Displays profile of the currentlyh selected user
+ */
 export class ProfilePage implements OnInit {
   constructor(
     private userDbService: UserDatabaseService,
@@ -148,7 +151,11 @@ export class ProfilePage implements OnInit {
       return;
     }
     console.log("profile page add friend", email, username, accountID);
-    this.friendServ.addFriend(email, username, accountID, favouriteID);
+    if (this.friendServ.addFriend(email, username, accountID, favouriteID)) {
+      this.menu.presentToast("Added friend " + this.email);
+    } else {
+      this.menu.presentAlert(username + " is already a friend");
+    }
   }
 
   removeFriend(email) {
@@ -157,15 +164,15 @@ export class ProfilePage implements OnInit {
       return;
     }
 
-    this.friendServ.removeFriend(email);
+    if (this.friendServ.removeFriend(email)) {
+      this.menu.presentToast("Removed friend " + this.email);
+    } else {
+      this.menu.presentAlert(this.tmdbUser + " is not a friend");
+    }
   }
 
   getCurrentEmail() {
     return this.sessionServ.email;
-  }
-
-  haveFriend() {
-    return this.friendServ.haveFriend(this.email);
   }
 
   gotoFavourites() {
@@ -203,7 +210,6 @@ export class ProfilePage implements OnInit {
               this.tmdbAccId,
               this.tmdbFavId
             );
-            this.menu.presentToast("Added friend " + this.email);
           }
         },
         {
@@ -211,13 +217,12 @@ export class ProfilePage implements OnInit {
           icon: "remove",
           handler: async () => {
             this.alert = await this.alertCtrl.create({
-              message: "Do you wish to leave?",
+              message: "Do you wish to remove " + this.tmdbUser + "?",
               buttons: [
                 {
                   text: "Remove",
                   handler: () => {
                     this.removeFriend(this.email);
-                    this.menu.presentToast("Removed friend " + this.email);
                   }
                 },
                 { text: "Keep", role: "cancel" }

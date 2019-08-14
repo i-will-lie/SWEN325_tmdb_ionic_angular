@@ -1,22 +1,14 @@
 import { MenusService } from "./../../services/menus.service";
-import { AuthenticationService } from "./../../services/authentication.service";
 import {
   AlertController,
   ActionSheetController,
   NavController
 } from "@ionic/angular";
-import { SessionService } from "./../../services/session.service";
-import { filter } from "rxjs/operators";
-import { map } from "rxjs/operators";
-import { HttpClient } from "@angular/common/http";
 
-import { SearchType, SearchService } from "./../../search.service";
+import { SearchService } from "./../../search.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Component, OnInit } from "@angular/core";
-import { getListeners } from "@angular/core/src/render3/discovery_utils";
 import { FavouritesService } from "../../services/favourites.service";
-import { tmdb } from "../../../environments/environment";
-import { Alert } from "selenium-webdriver";
 
 @Component({
   selector: "app-detail",
@@ -24,74 +16,73 @@ import { Alert } from "selenium-webdriver";
   styleUrls: ["./detail.page.scss"]
 })
 export class DetailPage implements OnInit {
-  itemDetails = null;
-  itemGenres = null;
-  list = null;
-  userRating;
-  ratingSub;
-  itemID;
-  itemType;
-  actionSheet;
-  alert;
-  posterPath;
-  // url = "https://image.tmdb.org/t/p/original/f2R11Ys1asseqyp5fnIMFC6ytE4.jpg";
+  itemDetails = null; //item to display o the page
+  itemGenres = null; //genres of this title
+  posterPath; //url address of img
+  itemID; //id of this item
+  itemType; // type of this item, movie or tv
+
+  userRating; //app user's rating for this title
+
+  actionSheet; //acitionsheet for user actions
+  alert; //to present alerts
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private searchServ: SearchService,
-    private http: HttpClient,
     private favouriteServ: FavouritesService,
-    private sessionServ: SessionService,
     private alertCtrl: AlertController,
     private asCtrl: ActionSheetController,
     private router: Router,
     private navCtrl: NavController,
-    private authServ: AuthenticationService,
     public menu: MenusService
-  ) {
-    //console.log("hi", service.result);
-  }
+  ) {}
 
+  /**
+   * Initialise the fields of the item to display.
+   */
   ngOnInit() {
+    //uses route path to set fields
     this.itemID = this.activatedRoute.snapshot.paramMap.get("id");
     this.itemType = this.activatedRoute.snapshot.paramMap.get("type");
-    console.log("new deatil", this.itemType, this.itemType, this.itemType);
+
+    //subscribe from database to retrieve the item
     this.searchServ.getDetails(this.itemType, this.itemID).subscribe(result => {
       this.itemGenres = result["genres"];
       this.posterPath = result["poster_path"];
       this.itemDetails = result;
       this.getUserRatings();
-      //this.getRating();
     });
-    //this.getAccount();
-
-    // // Get the information from the API
-    // await this.movieService.getDetails(id).then(result => {
-    //   console.log("res ", result);
-    //   this.itemDetails = result;
-    // });
-  }
-  getGenres() {
-    console.log(this.itemGenres);
   }
 
+  /**
+   * Get the user rating of this title.
+   */
   async getUserRatings() {
+    //get item appropriate from list of appropriate type
     const result =
       this.itemType == "tv"
         ? await this.favouriteServ.getTVRatings()
         : await this.favouriteServ.getMovieRatings();
 
-    this.getItemRating(result);
+    //get rating from result
+    this.setItemRating(result);
   }
 
-  async getItemRating(ratings) {
-    //var res = this.favouriteServ.ratedMovies;
-    if (ratings != []) {
-      var item = await ratings.filter(
+  /**
+   * Set the user rating from the given list of item.
+   *
+   * @param ratingsItem
+   */
+  async setItemRating(ratingsItem) {
+    //continue if the not empty
+    if (ratingsItem != []) {
+      //attempt to retrieve current item from list
+      var item = await ratingsItem.filter(
         res => res["id"] == parseInt(this.itemID)
       );
 
-      console.log("ITEM[0]", item, item[0]);
-
+      //if item found update rating otherwise item hasn't been voted on.
       if (item[0]) {
         this.userRating = await item[0]["rating"];
       } else {
@@ -103,15 +94,20 @@ export class DetailPage implements OnInit {
     }
   }
 
-  getImage() {
+  /**
+   * Return the url path of image of this item.
+   */
+  getImage(): string {
     return (
       "https://image.tmdb.org/t/p/original" + this.itemDetails["poster_path"]
     );
-    // return "https://image.tmdb.org/t/p/original/f2R11Ys1asseqyp5fnIMFC6ytE4.jpg";
   }
 
   /**
    * ActionSheet managing rating and favourites.
+   * Options to add/remove to favourites/ratings
+   * with confirmations for removals
+   * Has nested alert for rating.
    */
   async showActions() {
     const actionSheet = await this.asCtrl
@@ -123,6 +119,7 @@ export class DetailPage implements OnInit {
             role: "destructive",
             icon: "star-half",
             handler: () => {
+              //prompt to select rating
               this.alert = this.alertCtrl
                 .create({
                   header: "Rate",
@@ -216,8 +213,10 @@ export class DetailPage implements OnInit {
             icon: "heart",
             handler: () => {
               this.favouriteServ.addToFavourites(this.itemID).then(res => {
-                this.menu.presentToast("Added Title");
-                this.ngOnInit();
+                if (res) {
+                  this.menu.presentToast("Added Title");
+                  this.ngOnInit();
+                }
               });
             }
           },
@@ -261,7 +260,7 @@ export class DetailPage implements OnInit {
                           this.itemID
                         )
                         .then(res => {
-                          this.menu.presentToast("Item Removed");
+                          this.menu.presentToast("Favourite Removed");
                           this.ngOnInit();
                         });
                     }
@@ -285,10 +284,16 @@ export class DetailPage implements OnInit {
       });
   }
 
+  /**
+   * Navigate to image page of this item.
+   */
   viewImage() {
     this.router.navigate(["/", "members", "image", this.posterPath]);
   }
 
+  /**
+   * Go back to previous page
+   */
   goBack() {
     this.navCtrl.pop();
   }

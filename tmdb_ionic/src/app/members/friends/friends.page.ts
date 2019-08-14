@@ -10,6 +10,7 @@ import { MenusService } from "../../services/menus.service";
   templateUrl: "./friends.page.html",
   styleUrls: ["./friends.page.scss"]
 })
+
 /**
  * Page functionaliity for finding users and displaying friends.
  */
@@ -34,6 +35,7 @@ export class FriendsPage implements OnInit {
    * Assigns the result to the field to allow it to be displayed.
    */
   async searchChanged() {
+    //get user with matching name from database
     this.searchSub = await this.afStore
       .collection("UserInfo", ref =>
         ref.where("tmdbUser.username", "==", this.searchFriend)
@@ -51,17 +53,22 @@ export class FriendsPage implements OnInit {
         }
       });
   }
-  // /**
 
-  getCurrentFriends() {
-    //console.log("c friends", this.friendServ.currentFriends);
+  /**
+   * Get the current list of friends.
+   *
+   * @return list of users or empty list if no friends.
+   */
+  getCurrentFriends(): [] {
     const friend = this.friendServ.currentFriends;
     if (friend[0]) {
-      //console.log("found", friend[0]["email"]);
       return friend;
     }
     return [];
   }
+  /**
+   * Go back to previous page.
+   */
   goBack() {
     this.navCtrl.pop();
   }
