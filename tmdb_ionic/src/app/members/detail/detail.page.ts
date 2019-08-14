@@ -256,7 +256,7 @@ export class DetailPage implements OnInit {
                     handler: () => {
                       this.favouriteServ
                         .removeFromFavourites(
-                          this.favouriteServ.tmdbFavId,
+                          this.favouriteServ.currentTmdbFavId,
                           this.itemID
                         )
                         .then(res => {

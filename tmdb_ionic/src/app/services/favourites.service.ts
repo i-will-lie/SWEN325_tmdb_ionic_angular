@@ -1,7 +1,6 @@
 import { SessionService } from "./session.service";
 import { HttpClient } from "@angular/common/http";
 import { tmdb } from "./../../environments/environment";
-import { UserDatabaseService } from "./user-database.service";
 import { Injectable } from "@angular/core";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { AuthenticationService } from "../services/authentication.service";
@@ -9,17 +8,17 @@ import { AuthenticationService } from "../services/authentication.service";
 @Injectable({
   providedIn: "root"
 })
+/**
+ * Provides service for managing favourites titles.
+ */
 export class FavouritesService {
-  userDb;
-  resultSub;
-  result;
-  personalListID;
-  ratedMovies: any;
-  ratedTV: any;
+  dbUserInfo; //subscribe to current user
+  currentEmail; //email of current user
+  currentTmdbUser; //username of current user
+  currentTmdbAccId; //friends of current user
+  currentTmdbFavId; //favourite list id of current user
 
-  ratingsTV;
-
-  ratingsMovies;
+  currentfavourites; //favorites
   constructor(
     private afStore: AngularFirestore,
     private http: HttpClient,
@@ -29,76 +28,52 @@ export class FavouritesService {
 
   ngOnInit() {}
 
-  dbUserInfo;
-  //userName;
-  email;
-  tmdbUser;
-  tmdbAccId;
-  tmdbFavId;
+  /**
+   *set the details of the currently selected user.
 
-  setCurrentUser(email) {
-    console.log("SETTING EMAIL", email);
+   * @param email: string
+   */
+  setCurrentUser(email: string) {
     this.dbUserInfo = this.afStore
       .collection("UserInfo")
       .doc(email)
       .valueChanges()
       .subscribe(res => {
-        //this.userName = res["username"];
-        this.email = res["fbUser"]["email"];
-        this.tmdbUser = res["tmdbUser"]["username"];
-        this.tmdbAccId = res["tmdbUser"]["accountID"];
-        this.tmdbFavId = res["favourites"];
-        console.log(
-          "emailllllllllllll",
-          this.email,
-          this.tmdbUser,
-          this.tmdbAccId,
-          this.tmdbFavId
-        );
-        // console.log(this.userDbService.dbInfo);
+        this.currentEmail = res["fbUser"]["email"];
+        this.currentTmdbUser = res["tmdbUser"]["username"];
+        this.currentTmdbAccId = res["tmdbUser"]["accountID"];
+        this.currentTmdbFavId = res["favourites"];
+        console.log();
       });
   }
 
-  async getFavourites(listID: string) {
+  /**
+   * Get the favourites list of the given ID.
+   *
+   * @param listID
+   */
+  async getFavourites(listID) {
     const sessionID = this.sessionServ.sessionID;
-
-    //api.themoviedb.org/3/account/{account_id}/lists?api_key=<<api_key>>&language=en-US&page=1
-
-    this.result = await this.http
+    this.currentfavourites = await this.http
       .get(
         `${tmdb.tmdbAPI.url}list/${listID}?api_key=${
           tmdb.tmdbAPI.apiKey
         }&session_id=${sessionID}`
       )
       .toPromise();
-
-    console.log("RES", this.result["items"]);
-
-    return this.result["items"];
+    return this.currentfavourites["items"];
   }
 
-  checkFavStatus(listID, movieID) {
-    return this.http
-      .get(
-        `${tmdb.tmdbAPI.url}list/${listID}/item_status?api_key=${
-          tmdb.tmdbAPI.apiKey
-        }&session_id=${
-          this.sessionServ.sessionID
-        }&movie_id=${movieID}&language=en-US&page=1`
-      )
-      .toPromise();
-  }
-
+  /**
+   * Add Item to favourites.
+   * NOTE: current API doesn't support lsit of different types.
+   * trying to add a tv item will instead add a movei with the same id.
+   * @param itemID
+   */
   addToFavourites(itemID) {
-    console.log(
-      "ADD TO FAV",
-      `${tmdb.tmdbAPI.url}list/${this.tmdbFavId}/add_item?api_key=${
-        tmdb.tmdbAPI.apiKey
-      }&session_id=${this.sessionServ.sessionID}&language=en-US&page=1`
-    );
     return this.http
       .post(
-        `${tmdb.tmdbAPI.url}list/${this.tmdbFavId}/add_item?api_key=${
+        `${tmdb.tmdbAPI.url}list/${this.currentTmdbFavId}/add_item?api_key=${
           tmdb.tmdbAPI.apiKey
         }&session_id=${this.sessionServ.sessionID}&language=en-US&page=1`,
         { media_id: parseInt(itemID) },
@@ -110,7 +85,11 @@ export class FavouritesService {
         console.log("ERROR", error["error"]["status_message"]);
       });
   }
-
+  /**
+   * Remove item from the given list.
+   * @param listID
+   * @param itemID
+   */
   removeFromFavourites(listID, itemID) {
     return this.http
       .post(
@@ -123,6 +102,9 @@ export class FavouritesService {
       .toPromise();
   }
 
+  /**
+   * Get all movies that have been rated.
+   */
   async getMovieRatings() {
     const result = await this.http
       .get(
@@ -137,6 +119,9 @@ export class FavouritesService {
     return result["results"];
   }
 
+  /**
+   * Get all tv shows that have been rated.
+   */
   async getTVRatings() {
     const result = await this.http
       .get(
@@ -151,48 +136,13 @@ export class FavouritesService {
     return result["results"];
   }
 
-  subToMovieRatings() {}
-
-  async setRatedMovies() {
-    console.log(
-      "SET RATE",
-      `${tmdb.tmdbAPI.url}account/${
-        this.sessionServ.accountID
-      }/rated/movies?api_key=${tmdb.tmdbAPI.apiKey}&session_id=${
-        this.sessionServ.sessionID
-      }&language=en-US&page=1`
-    );
-    //   .toPromise();
-    // this.ratedMovies = res["results"];
-    // console.log(res["results"]);
-  }
-
-  async setRatedTV() {
-    //   .toPromise();
-    // this.ratedTV = res["results"];
-  }
-
-  async getMovieRating(itemID) {
-    return await this.http
-      .get(
-        `${tmdb.tmdbAPI.url}account/${
-          this.sessionServ.accountID
-        }/rated/tv?api_key=${tmdb.tmdbAPI.apiKey}&session_id=${
-          this.sessionServ.sessionID
-        }&language=en-US&page=1`
-      )
-      .toPromise()
-      .then(res => {
-        if (res["result"]) {
-          let item = res["result"].filter(res => res["id"] == parseInt(itemID));
-          if (item[0]) {
-            console.log("RATING IS", item[0]["rating"]);
-            return item[0]["rating"];
-          }
-        }
-      });
-  }
-  //https://api.themoviedb.org/3/movie/{movie_id}/rating?api_key=<<api_key>>
+  /**
+   * Set the rating of the given item.
+   *
+   * @param type
+   * @param id
+   * @param rating
+   */
   async rateItem(type, id, rating) {
     console.log(
       "rateItem",
@@ -212,17 +162,13 @@ export class FavouritesService {
         { headers: { "Content-Type": "application/json;charset=utf-8" } }
       )
       .toPromise();
-
-    // https://api.themoviedb.org/3/tv/506574/rating?api_key=79ad210fe32318cf14cfeb7de2cb26fa&session_id=b17ae82ff5430a67c16fd06cb934f317ab23c5c3&language=en-US&page=1
-
-    // if (type == "tv") {
-    //   this.setRatedTV();
-    // } else {
-    //   this.setRatedMovies();
-    // }
-    // https://api.themoviedb.org/3/movie/{movie_id}/rating?api_key=<<api_key>>
   }
-
+  /**
+   * Remove rating of given item.
+   *
+   * @param itemType
+   * @param itemID
+   */
   removeRating(itemType, itemID) {
     return this.http
       .delete(

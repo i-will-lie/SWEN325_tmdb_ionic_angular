@@ -26,18 +26,19 @@ export class TmdbAuthenticationService {
    * Request token from TMDB.
    */
   async tmdbRequestToken() {
-    try {
-      return await this.http
-        .get(
-          `${tmdb.tmdbAPI.url}authentication/token/new?api_key=${
-            tmdb.tmdbAPI.apiKey
-          }`
-        )
-        .toPromise();
-    } catch (e) {
-      this.menu.presentAlert(e);
-    }
-    return null;
+    return await this.http
+      .get(
+        `${tmdb.tmdbAPI.url}authentication/token/new?api_key=${
+          tmdb.tmdbAPI.apiKey
+        }`
+      )
+      .toPromise()
+      .catch(e => {
+        return e;
+      });
+    // } catch (e) {
+    //   return e; //this.menu.presentAlert(e);
+    // }
   }
 
   /**
@@ -59,7 +60,7 @@ export class TmdbAuthenticationService {
       request_token: token
     };
 
-    const res = await this.http
+    return await this.http
       .post(
         `${tmdb.tmdbAPI.url}authentication/token/validate_with_login?api_key=${
           tmdb.tmdbAPI.apiKey
@@ -68,9 +69,10 @@ export class TmdbAuthenticationService {
       )
       .toPromise()
       .catch(error => {
-        this.menu.presentAlert(error);
+        //this.menu.presentAlert(error);
+        return error;
       });
-    return res;
+    // return res;
   }
   /**
    * Use use Authenticated token to generate a session.
@@ -78,7 +80,7 @@ export class TmdbAuthenticationService {
    * @param token :string authenticated token to be used for get session ID.
    */
   async tmdbRequestSession(token: string) {
-    const session = await this.http
+    return await this.http
       .post(
         `${tmdb.tmdbAPI.url}authentication/session/new?api_key=${
           tmdb.tmdbAPI.apiKey
@@ -89,25 +91,25 @@ export class TmdbAuthenticationService {
       )
       .toPromise()
       .catch(error => {
-        this.menu.presentAlert(error);
+        return error;
       });
-    return session;
   }
-
   /**
    * Retrieve user
    *
    * @param sessionID
    */
   async tmdbGetAccountID(sessionID: string) {
-    const tmdbAccID = await this.http
+    return await this.http
       .get(
         `${tmdb.tmdbAPI.url}account?api_key=${
           tmdb.tmdbAPI.apiKey
         }&session_id=${sessionID}`
       )
-      .toPromise();
-    return tmdbAccID;
+      .toPromise()
+      .catch(error => {
+        return error;
+      });
   }
 
   /**

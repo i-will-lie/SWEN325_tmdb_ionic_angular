@@ -10,9 +10,6 @@ import { FbUser } from "../models/fbUser";
 import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
 
-const tmdbURL = tmdb.tmdbAPI.url;
-const tmdbAPI = tmdb.tmdbAPI.apiKey;
-
 @Injectable({
   providedIn: "root"
 })
@@ -35,7 +32,6 @@ export class AuthenticationService {
   constructor(
     private afAuth: AngularFireAuth,
     private toastCtrl: ToastController,
-    private http: HttpClient,
     private userDbService: UserDatabaseService,
     private alertCtrl: AlertController,
     private router: Router
@@ -132,109 +128,10 @@ export class AuthenticationService {
     //add user to data base
     this.userDbService.createNewUser(newUser);
   }
-
   /**
-   *Add
-   *
-   * @param tmdbUsername
-   * @param tmdbPassword
-   * @param tmdbAccountID
+   * Logout from app. Clearing any authentication services.
+   * Provides confirmation prompt.
    */
-  tmdbAddUser(
-    tmdbUsername: string,
-    tmdbPassword: string,
-    tmdbAccountID: string
-  ) {
-    const newTmdbUser = {
-      username: tmdbUsername,
-      password: tmdbPassword,
-      accountID: tmdbAccountID
-    };
-
-    this.userDbService.addTmdbUser(this.fbUser.email, newTmdbUser);
-  }
-
-  tmdbAddSession() {
-    console.log("+s", this.fbUser.email, this.currentSessionID);
-    this.userDbService.addTmdbSession(this.fbUser.email, this.currentSessionID);
-  }
-
-  async tmdbRequestToken() {
-    try {
-      return await this.http
-        .get(`${tmdbURL}authentication/token/new?api_key=${tmdbAPI}`)
-        .toPromise();
-    } catch (e) {}
-    return null;
-  }
-
-  async tmdbAuthenticateLoginWithToken(
-    username: string,
-    password: string,
-    token: string
-  ) {
-    console.log(username, password);
-
-    const loginData = {
-      username: "joewill", //username,
-      password: "abc123456", //password,
-      //username: username,
-      //password: password,
-      request_token: token
-    };
-
-    const res = await this.http
-      .post(
-        `${tmdbURL}authentication/token/validate_with_login?api_key=${tmdbAPI}`,
-        loginData
-      )
-      .toPromise();
-    return res;
-    console.log("login res", res);
-  }
-  async tmdbRequestSession(token: string) {
-    const session = await this.http
-      .post(`${tmdbURL}authentication/session/new?api_key=${tmdbAPI}`, {
-        request_token: token
-      })
-      .toPromise();
-    if (session["success"]) {
-      this.currentSessionID = session["session_id"];
-      console.log("sid", this.currentSessionID);
-    }
-    return session;
-  }
-
-  async tmdbGetAccountID(sessionID: string) {
-    const tmdbAccID = await this.http
-      .get(`${tmdbURL}account?api_key=${tmdbAPI}&session_id=${sessionID}`)
-      .toPromise();
-    return tmdbAccID;
-  }
-
-  async tmdbIsAuthenticated() {
-    console.log("tmdbaut", this.tmdbAuthenticated);
-    //return await this.afDatabase.tmdbLoggedOn();
-    return this.tmdbAuthenticated;
-  }
-  requestTmdbToken() {
-    const getURL = "authentication/token/new?api_key=";
-    return this.http.get(`${tmdbURL}${getURL}${tmdbAPI}`).subscribe(res => {
-      console.log("token", res);
-      return res;
-    });
-  }
-
-  // addUser(newUser) {
-  //   this.currentUser = newUser;
-  // }
-  // addAccID(newID) {
-  //   this.currentTmdbAccID = newID;
-  // }
-
-  // getCurrentUser() {
-  //   return this.currentUser;
-  // }
   async logout() {
     this.alert = await this.alertCtrl.create({
       message: "Do you wish to leave?",
@@ -252,22 +149,15 @@ export class AuthenticationService {
     });
     await this.alert.present();
   }
-  // /**
-
-  // getAccID() {
-  //   return this.currentTmdbAccID;
-  // }
-  // getSessionID() {
-  //   return this.currentSessionID;
-  // }
 
   /**
-   * Get email of current user being accessed.
+   * Forces signout die to missing credentials.
+   * Initialised by tmdb-login.
    */
-  // getCurrentEmail() {
-  //   return this.fbUser.email;
-  // }
-
+  missingCredentialSignout() {
+    this.afAuth.auth.signOut();
+    this.router.navigate([""]);
+  }
   /**
    * Firebase password reset request.
    *

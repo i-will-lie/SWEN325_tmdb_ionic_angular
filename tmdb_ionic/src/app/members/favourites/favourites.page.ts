@@ -63,22 +63,10 @@ export class FavouritesPage implements OnInit {
    */
   async setFavourites() {
     this.favouritesResult = await this.favouriteServ.getFavourites(
-      this.favouriteServ.tmdbFavId
+      this.favouriteServ.currentTmdbFavId
     );
   }
-  /**
-   * Check if item of given itemID is already in favourite list.
-   *
-   * @param itemID: number|string
-   * @return Promise with boolean indicating if item is in list or not.
-   */
-  checkIfFavourite(itemID: number | string): Promise<boolean> {
-    return this.favouriteServ
-      .checkFavStatus(this.favouriteServ.tmdbFavId, itemID)
-      .then(res => {
-        return res["item_present"];
-      });
-  }
+
   /**
    * Remove title of given ID from favourites list.
    *
@@ -86,7 +74,7 @@ export class FavouritesPage implements OnInit {
    */
   removeFromFavourites(itemID) {
     this.favouriteServ
-      .removeFromFavourites(this.favouriteServ.tmdbFavId, itemID)
+      .removeFromFavourites(this.favouriteServ.currentTmdbFavId, itemID)
       .then(res => {
         this.setFavourites();
       });
@@ -95,7 +83,7 @@ export class FavouritesPage implements OnInit {
    * Check if the current favourites list is the app user.
    */
   isOwner(): boolean {
-    return this.sessionServ.accountID == this.favouriteServ.tmdbAccId;
+    return this.sessionServ.accountID == this.favouriteServ.currentTmdbAccId;
   }
   /**
    * Go back to previous page.

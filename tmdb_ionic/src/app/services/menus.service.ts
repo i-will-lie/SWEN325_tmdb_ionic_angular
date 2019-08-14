@@ -71,7 +71,7 @@ export class MenusService {
                 "favourites",
                 this.sessionServ.accountID,
                 this.sessionServ.username,
-                this.favouriteServ.tmdbFavId
+                this.favouriteServ.currentTmdbFavId
               ]);
             }
           },

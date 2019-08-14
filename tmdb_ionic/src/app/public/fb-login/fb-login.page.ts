@@ -89,7 +89,7 @@ export class FbLoginPage implements OnInit {
     // this.loading = await this.menu.createLoading();
     // await this.loading.present();
 
-    //login to firebase, if successful continue to tmdb login page
+    // //login to firebase, if successful continue to tmdb login page
     // this.fbAuth
     //   .fbLogin(this.loginForm.value.email, this.loginForm.value.password)
     //   .then(res => {

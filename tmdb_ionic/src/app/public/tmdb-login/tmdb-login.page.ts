@@ -22,6 +22,7 @@ export class TmdbLoginPage implements OnInit {
   tmdbUsername: string; //tmdb username provided by user
   tmdbPassword: string; //tmdb password provided by user
 
+  existingLogin = false; //flag for if there is existing tmdb login details
   loginSub; //subscription to fb database to crossrefernce credentials
   load; //agent for load controller
   constructor(
@@ -53,7 +54,7 @@ export class TmdbLoginPage implements OnInit {
       //if credentials exist login using credentials from firebase.
       this.load.dismiss();
       if (res["tmdbUser"] != null) {
-        console.log("YES");
+        this.existingLogin = true;
         this.menu.presentToast("Logging in with Existing Details");
         (this.tmdbUsername = res["tmdbUser"]["username"]),
           (this.tmdbPassword = res["tmdbUser"]["password"]);
@@ -70,7 +71,7 @@ export class TmdbLoginPage implements OnInit {
    * Attempt to authenticate with TMDB API by handshaking with tokens.
    */
   async tmdbLogin() {
-    console.log("LOGIN");
+    console.log("LOGIN", this.userDbServ.dbUser);
     this.load = await this.menu.createLoading();
     await this.load.present();
 
@@ -85,7 +86,7 @@ export class TmdbLoginPage implements OnInit {
     if (tokenReqRes["request_token"]) {
       var token = tokenReqRes["request_token"];
     } else {
-      this.menu.presentAlert("Failured to generate Login Token");
+      this.menu.presentAlert(tokenReqRes["error"]["status_message"]);
       this.load.dismiss();
       return;
     }
@@ -96,8 +97,9 @@ export class TmdbLoginPage implements OnInit {
       token
     );
 
-    if (!loginRes["success"]) {
-      this.menu.presentAlert("Incorrect Login Details");
+    if (loginRes["success"]) {
+    } else {
+      this.menu.presentAlert(loginRes["error"]["status_message"]);
       this.load.dismiss();
       return;
     }
@@ -117,15 +119,14 @@ export class TmdbLoginPage implements OnInit {
 
     //get the account id of current user
     const tmdbAccID = await this.tmdbAuthServ.tmdbGetAccountID(tmdbSessionId);
-    console.log("id", tmdbAccID["id"]);
-    console.log(
-      "adding tmdbuser",
-      tmdbAccID["id"],
-      this.tmdbUsername,
-      this.tmdbPassword
-    );
 
-    //collect information of current user to later use
+    if (!tmdbAccID["id"]) {
+      this.menu.presentAlert(tmdbAccID["error"]["status_message"]);
+      this.load.dismiss();
+    }
+
+    //update database with tmdb detasl if they don't exist
+
     this.tmdbAuthServ.tmdbAddUser(
       this.tmdbUsername,
       this.tmdbPassword,
@@ -149,11 +150,11 @@ export class TmdbLoginPage implements OnInit {
    */
   authComplete() {
     this.load.dismiss();
-    this.loginSub.unsubscribe();
+    if (this.existingLogin) {
+      this.loginSub.unsubscribe();
+    }
     this.friendServ.initFriends();
     this.userDbServ.getListId();
-    this.favouriteServ.setRatedMovies();
-    this.favouriteServ.setRatedTV();
 
     this.router.navigate(["members", "dashboard"]);
   }

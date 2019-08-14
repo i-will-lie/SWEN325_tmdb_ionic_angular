@@ -86,9 +86,9 @@ export class DashboardPage implements OnInit {
     this.router.navigate([
       "members",
       "favourites",
-      this.favouriteServ.tmdbAccId,
-      this.favouriteServ.tmdbUser,
-      this.favouriteServ.tmdbFavId
+      this.favouriteServ.currentTmdbAccId,
+      this.favouriteServ.currentTmdbUser,
+      this.favouriteServ.currentTmdbFavId
     ]);
   }
   /**
