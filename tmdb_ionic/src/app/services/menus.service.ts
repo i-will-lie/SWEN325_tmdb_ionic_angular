@@ -51,7 +51,12 @@ export class MenusService {
             text: "Profile",
             icon: "person",
             handler: () => {
-              this.router.navigate(["members", "profile"]);
+              this.router.navigate([
+                "members",
+                "profile",
+                this.sessionServ.email,
+                this.sessionServ.username
+              ]);
             }
           },
           {

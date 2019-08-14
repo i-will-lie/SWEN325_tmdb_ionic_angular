@@ -56,52 +56,57 @@ export class FbLoginPage implements OnInit {
       ]
     });
 
-    this.fbLogin(); //auto login for testing
+    //this.fbLogin(); //auto login for testing
   }
 
   /**
    * Attempt to authentivate with firebase server.
    */
   async fbLogin() {
-    let email = "joewill@orcon.net.nz";
-    let password = "aaaa123";
+    //login to firebase, if successful continue to tmdb login page
 
     this.loading = await this.menu.createLoading();
     await this.loading.present();
     this.fbAuth
-      .fbLogin(email, password)
-      //.fbLogin(this.loginForm.value.email, this.loginForm.value.password)
+      .fbLogin(this.loginForm.value.email, this.loginForm.value.password)
       .then(res => {
-        this.loading.dismiss();
-        if (res == true) {
-          this.router.navigate(["tmdb-login"]);
-          this.userDbServ.connectToDb(email);
-          console.log("to tmdblogin");
-          // this.fbAuth.fbEmail = email;
-          // this.fbAuth.fbPassword = password;
+        this.fbAuth.fbUser = {
+          email: this.loginForm.value.email,
+          password: this.loginForm.value.password
+        };
+        this.router.navigate(["tmdb-login"]);
 
-          //this.router.navigate(["members", "dashboard"]);
+        //setup subscribtion to the firebase with user to have it available later.
+        this.userDbServ.connectToDb(this.loginForm.value.email);
 
-          //on successful login set session email to the user email
-          this.sessionServ.email = email;
-        }
-      });
+        //record email to session
+        this.sessionServ.email = this.loginForm.value.email;
+      })
+      .catch(error => this.menu.presentAlert(error.message))
+      .finally(this.loading.dismiss());
+
+    //code for logining auto matically when testing
+    // let email = "joewill@orcon.net.nz";
+    // let password = "aaaa123";
+
     // this.loading = await this.menu.createLoading();
     // await this.loading.present();
-
-    // //login to firebase, if successful continue to tmdb login page
     // this.fbAuth
-    //   .fbLogin(this.loginForm.value.email, this.loginForm.value.password)
+    //   .fbLogin(email, password)
+    //   //.fbLogin(this.loginForm.value.email, this.loginForm.value.password)
     //   .then(res => {
     //     this.loading.dismiss();
     //     if (res == true) {
     //       this.router.navigate(["tmdb-login"]);
+    //       this.userDbServ.connectToDb(email);
+    //       console.log("to tmdblogin");
+    //       // this.fbAuth.fbEmail = email;
+    //       // this.fbAuth.fbPassword = password;
 
-    //       //setup subscribtion to the firebase with user to have it available later.
-    //       this.userDbServ.connectToDb(this.loginForm.value.email);
+    //       //this.router.navigate(["members", "dashboard"]);
 
-    //       //record email to session
-    //       this.sessionServ.email = this.loginForm.value.email;
+    //       //on successful login set session email to the user email
+    //       this.sessionServ.email = email;
     //     }
     //   });
   }
@@ -113,9 +118,11 @@ export class FbLoginPage implements OnInit {
     this.fbAuth
       .fbRegister(this.loginForm.value.email, this.loginForm.value.password)
       .then(res => {
-        if (res == true) {
-          this.menu.presentToast("Successful Register");
-        }
+        this.menu.presentToast("Successful Register");
+        this.fbAuth.fbAddUser({
+          email: this.loginForm.value.email,
+          password: this.loginForm.value.password
+        });
       })
       .catch(error => {
         this.menu.presentAlert(error.message);

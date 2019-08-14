@@ -89,10 +89,7 @@ export class TmdbAuthenticationService {
           request_token: token
         }
       )
-      .toPromise()
-      .catch(error => {
-        return error;
-      });
+      .toPromise();
   }
   /**
    * Retrieve user

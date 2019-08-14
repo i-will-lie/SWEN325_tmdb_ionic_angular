@@ -1,6 +1,5 @@
 <ion-header>
-  <ion-toolbar
-    >><ion-back-button>Back</ion-back-button>
+  <ion-toolbar>
     <ion-title>My Movie Search</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -15,7 +14,7 @@
     <ion-label>Select Search Type</ion-label>
     <ion-select
       [(ngModel)]="type"
-      debounce="500"
+      debounce="1000"
       (ionChange)="searchChanged($event)"
     >
       <ion-select-option value="movie">Movie</ion-select-option>
@@ -44,11 +43,19 @@
     </ion-item>
   </ion-list>
 </ion-content>
-<ion-footer>
-  <ion-grid
-    ><ion-row>
-      <ion-col> <ion-item (click)="menu.showMenu()">MENU</ion-item> </ion-col>
-      <ion-col><ion-item got>Back</ion-item> </ion-col></ion-row
-    ></ion-grid
-  >
+<ion-footer
+  ><ion-grid>
+    <ion-row>
+      <ion-col
+        ><ion-item expand="block" color="tertiary" (click)="menu.showMenu()"
+          ><ion-ripple-effect></ion-ripple-effect>MENU</ion-item
+        ></ion-col
+      >
+      <ion-col
+        ><ion-item expand="block" color="light" (click)="goBack()"
+          ><ion-ripple-effect></ion-ripple-effect>BACK</ion-item
+        ></ion-col
+      >
+    </ion-row>
+  </ion-grid>
 </ion-footer>

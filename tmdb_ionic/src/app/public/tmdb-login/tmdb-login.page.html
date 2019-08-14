@@ -1,21 +1,26 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>tmdb login</ion-title>
-  </ion-toolbar>
-</ion-header>
+<div align="center">
+  <img width="75%" src="./../assets/tmdb_logo_black.png" />
+</div>
+<ion-card-subtitle>TMDB Login</ion-card-subtitle>
 
-<ion-content padding>
+<ion-content>
   <ion-item>
-    <ion-input type="string" [(ngModel)]="tmdbUsername">Login: </ion-input>
+    <ion-input type="string" [(ngModel)]="tmdbUsername"
+      ><ion-ripple-effect></ion-ripple-effect>Login:
+    </ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-input type="password" [(ngModel)]="tmdbPassword">Password: </ion-input>
+    <ion-input type="password" [(ngModel)]="tmdbPassword"
+      ><ion-ripple-effect></ion-ripple-effect>Password:
+    </ion-input>
   </ion-item>
 
   <ion-item (click)="tmdbLogin()" color="primary" expand="block"
     >Login</ion-item
   >
   <ion-item-divider></ion-item-divider>
-  <ion-item class="" (click)="cancel()">Cancel</ion-item>
+  <ion-item color="light" (click)="cancel()"
+    ><ion-ripple-effect></ion-ripple-effect>Cancel</ion-item
+  >
 </ion-content>

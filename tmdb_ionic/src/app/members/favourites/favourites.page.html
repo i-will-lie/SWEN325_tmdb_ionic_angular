@@ -36,13 +36,13 @@
   ><ion-grid>
     <ion-row>
       <ion-col
-        ><ion-item class="mainMenu" (click)="menu.showMenu()"
-          >MENU</ion-item
-        ></ion-col
-      >
+        ><ion-item expand="block" color="tertiary" (click)="menu.showMenu()"
+          ><ion-ripple-effect></ion-ripple-effect>MENU</ion-item
+        >
+      </ion-col>
       <ion-col
-        ><ion-item class="backButton" (click)="goBack()"
-          >BACK</ion-item
+        ><ion-item expand="block" color="light" (click)="goBack()"
+          ><ion-ripple-effect></ion-ripple-effect>BACK</ion-item
         ></ion-col
       >
     </ion-row>

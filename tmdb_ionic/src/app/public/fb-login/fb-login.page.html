@@ -1,7 +1,10 @@
 <p *ngIf="submitAttempt" style="color: #ea6153;">
   Please fill out all details accurately.
 </p>
-
+<div align="center">
+  <img width="75%" src="./../assets/tmdb_logo_green.png" />
+</div>
+<ion-card-subtitle>User Login</ion-card-subtitle>
 <ion-list lines="none">
   <form [formGroup]="loginForm">
     <ion-item>
@@ -38,7 +41,7 @@
       [disabled]="
         !loginForm.controls.password.valid || !loginForm.controls.email.valid
       "
-      >Login</ion-item
+      ><ion-ripple-effect></ion-ripple-effect>Login</ion-item
     >
   </form>
   <ion-item
@@ -48,11 +51,22 @@
     [disabled]="
       !loginForm.controls.password.valid || !loginForm.controls.email.valid
     "
-    >Register</ion-item
+    ><ion-ripple-effect></ion-ripple-effect>Register</ion-item
   ><ion-item-divider></ion-item-divider>
   <ion-item
+    color="light"
     (click)="requestPasswordReset()"
     [disabled]="!loginForm.controls.email.valid"
-    >Forgot Password</ion-item
+    ><ion-ripple-effect></ion-ripple-effect>Forgot Password</ion-item
   >
 </ion-list>
+<ion-footer>
+  <ion-grid>
+    <ion-row>
+      <ion-col></ion-col>
+      <ion-col>
+        <img src="./../assets/powered_by_green.png" align="right" size="10%"
+      /></ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-footer>

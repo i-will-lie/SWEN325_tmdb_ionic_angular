@@ -44,16 +44,29 @@
     </ion-img>
   </ion-card>
 </ion-content>
+
 <ion-footer>
   <ion-card>
     <ion-card-content class="overview">
       {{ itemDetails?.overview }}
-    </ion-card-content> </ion-card
-  ><ion-row>
-    <ion-col><ion-item (click)="menu.showMenu()">MENU</ion-item></ion-col>
-    <ion-col>
-      <ion-item (click)="showActions()">MORE ACTIONS</ion-item></ion-col
-    >
-    <ion-col> <ion-item (click)="goBack()">BACK</ion-item></ion-col></ion-row
-  >
+    </ion-card-content>
+  </ion-card>
+  <ion-grid>
+    <ion-row>
+      <ion-col
+        ><ion-item expand="block" color="tertiary" (click)="menu.showMenu()"
+          ><ion-ripple-effect></ion-ripple-effect>MENU</ion-item
+        > </ion-col
+      ><ion-col>
+        <ion-item expand="block" color="secondary" (click)="showActions()"
+          ><ion-ripple-effect></ion-ripple-effect>MORE ACTIONS</ion-item
+        ></ion-col
+      >
+      <ion-col
+        ><ion-item expand="block" color="light" (click)="goBack()"
+          ><ion-ripple-effect></ion-ripple-effect>BACK</ion-item
+        ></ion-col
+      >
+    </ion-row>
+  </ion-grid>
 </ion-footer>

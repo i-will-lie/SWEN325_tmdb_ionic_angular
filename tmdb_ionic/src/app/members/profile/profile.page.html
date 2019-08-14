@@ -1,6 +1,5 @@
 <ion-header>
   <ion-toolbar>
-    <ion-back-button></ion-back-button>
     <ion-title>{{ currentTmdbUser }}'s Profile</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -26,11 +25,21 @@
 </ion-content>
 <ion-footer>
   <ion-grid>
-    <ion-row
-      ><ion-col><ion-item (click)="menu.showMenu()">MENU</ion-item></ion-col>
+    <ion-row>
       <ion-col
-        ><ion-item (click)="showActions()">MORE ACTIONS</ion-item></ion-col
-      ><ion-col (click)="goBack()">BACK</ion-col></ion-row
-    >
+        ><ion-item expand="block" color="tertiary" (click)="menu.showMenu()"
+          ><ion-ripple-effect></ion-ripple-effect>MENU</ion-item
+        > </ion-col
+      ><ion-col>
+        <ion-item expand="block" color="secondary" (click)="showActions()"
+          ><ion-ripple-effect></ion-ripple-effect>MORE ACTIONS</ion-item
+        ></ion-col
+      >
+      <ion-col
+        ><ion-item expand="block" color="light" (click)="goBack()"
+          ><ion-ripple-effect></ion-ripple-effect>BACK</ion-item
+        ></ion-col
+      >
+    </ion-row>
   </ion-grid>
 </ion-footer>

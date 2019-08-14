@@ -7,6 +7,7 @@
     >
   </ion-toolbar>
 </ion-header>
+
 <ion-content>
   <ion-img
     (click)="getRandomMovie()"
@@ -16,40 +17,68 @@
 
 <ion-footer>
   <ion-grid>
-    <ion-row>
+    <ion-row expand="block">
       <ion-col
-        ><ion-item class="button" (click)="navigateToProfile()"
-          >PROFILE</ion-item
+        ><ion-item
+          class="ion-activatable"
+          expand="block"
+          color="tertiary"
+          (click)="navigateToProfile()"
+          ><ion-ripple-effect></ion-ripple-effect>PROFILE</ion-item
         ></ion-col
       >
 
       <ion-col
-        ><ion-item class="button" (click)="navigate('search')"
-          >SEARCH TITLE</ion-item
+        ><ion-item
+          class="ion-activatable"
+          expand="block"
+          color="tertiary"
+          (click)="navigate('search')"
+          ><ion-ripple-effect></ion-ripple-effect>SEARCH TITLE</ion-item
         ></ion-col
       >
     </ion-row>
 
     <ion-row>
       <ion-col>
-        <ion-item class="button" (click)="navigate('friends')"
-          >FRIENDS</ion-item
+        <ion-item
+          class="ion-activatable"
+          expand="block"
+          color="tertiary"
+          (click)="navigate('friends')"
+          ><ion-ripple-effect></ion-ripple-effect>FRIENDS</ion-item
         >
       </ion-col>
 
       <ion-col>
-        <ion-item class="button" (click)="navigateToFavourites()"
-          >FAVOURITES</ion-item
+        <ion-item
+          class="ion-activatable"
+          expand="block"
+          color="tertiary"
+          (click)="navigateToFavourites()"
+          ><ion-ripple-effect></ion-ripple-effect>FAVOURITES</ion-item
         ></ion-col
       >
     </ion-row>
 
     <ion-row>
       <ion-col
-        ><ion-item class="button" (click)="logout()">Logout</ion-item></ion-col
+        ><ion-item
+          class="ion-activatable"
+          expand="block"
+          color="light"
+          (click)="logout()"
+          ><ion-ripple-effect></ion-ripple-effect>Logout</ion-item
+        ></ion-col
       >
       <ion-col>
-        <ion-item (click)="navigateToDetail()">View Popular Title</ion-item>
+        <ion-item
+          class="ion-activatable"
+          expand="block"
+          color="secondary"
+          (click)="navigateToDetail()"
+          ><ion-ripple-effect></ion-ripple-effect>View Popular Title</ion-item
+        >
       </ion-col>
     </ion-row>
   </ion-grid>

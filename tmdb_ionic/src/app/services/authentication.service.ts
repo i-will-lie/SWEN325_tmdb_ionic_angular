@@ -43,23 +43,13 @@ export class AuthenticationService {
    * @param email:string
    * @param password:string
    */
-  async fbLogin(email: string, password: string): Promise<boolean> {
+  async fbLogin(email: string, password: string) {
     console.log(email, password);
 
-    let success = false; //flag for succcess of login attempt
+    //flag for succcess of login attempt
 
     //sign in to firebase and set success to true if successful
-    await this.afAuth.auth
-      .signInWithEmailAndPassword(email, password)
-      .then(res => {
-        console.log("LOG", res);
-
-        this.fbUser = { email: email, password: password };
-        success = true;
-      })
-      .catch(error => this.presentAlert(error.message));
-
-    return success;
+    return await this.afAuth.auth.signInWithEmailAndPassword(email, password);
   }
 
   /**
@@ -69,16 +59,11 @@ export class AuthenticationService {
    * @param email:string
    * @param password:string
    */
-  async fbRegister(email: string, password: string): Promise<boolean> {
-    try {
-      this.afAuth.auth.createUserWithEmailAndPassword(email, password);
-      this.fbAddUser({ email: email, password: password });
-
-      return true;
-    } catch (e) {
-      this.presentAlert(e.message);
-      return false;
-    }
+  async fbRegister(email: string, password: string) {
+    return await this.afAuth.auth.createUserWithEmailAndPassword(
+      email,
+      password
+    );
   }
 
   /**

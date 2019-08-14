@@ -105,14 +105,16 @@ export class TmdbLoginPage implements OnInit {
     }
 
     //authenticate the token to get session ID
-    const sessionRes = await this.tmdbAuthServ.tmdbRequestSession(token);
-    if (sessionRes["success"]) {
-      tmdbSessionId = sessionRes["session_id"];
-    } else {
-      this.menu.presentAlert("Unable to create session");
-      this.load.dismiss();
-      return;
-    }
+    await this.tmdbAuthServ
+      .tmdbRequestSession(token)
+      .then(res => {
+        tmdbSessionId = res["session_id"];
+      })
+      .catch(err => {
+        this.menu.presentAlert("Unable to create session");
+        return;
+      })
+      .finally(this.load.dismiss());
 
     //set authenticated flag to true for auth guard
     this.authService.tmdbAuthenticated = true;
